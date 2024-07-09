@@ -7,10 +7,25 @@ const create = async (req, res) => {
         throw new Error("All Feilds are Require")
     }
 
+    const exits=await User.findOne({email})
+
+    if(exits){
+      res.json({
+        success: false,
+        message:"This User Already Exits",
+       
+      });
+     
+    }
+
     const user = await User.create({ username, email, password });
 
     if(!user){
-        throw new Error("user does not created")
+       res.json({
+        success: false,
+        message:"Databse Error ......",
+       
+      });
     }
     res.json({
       user: user,
@@ -29,17 +44,15 @@ const create = async (req, res) => {
          
 
       const user = await User.findOne({  email });
-      if (!user){
-        throw new Error("This user Already Exists.......")
-      }
+    
         
-      
-         const isCorrect=password==user.password 
-  
-         if (!isCorrect) {
-            throw new Error("Password is Incorrect")
-         }
-  
+      const checkPassword=password==user.password
+   if(!checkPassword){
+    res.status(401).json({
+      success: false,
+      message:"Passwrod Incorrect",
+    });
+   }
   
       res.status(200).json({
         message:"Sucessfully login",
