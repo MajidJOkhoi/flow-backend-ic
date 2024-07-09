@@ -1,37 +1,32 @@
 import { User } from "../model/user.model.js";
+import { ApiError } from "../utlis/ApiError.js";
 
 const create = async (req, res) => {
     const { username, email, password } = req.body;
     
     if([username,email,password].some(item=> item?.trim()=="")){
-        throw new Error("All Feilds are Require")
+        throw new ApiError(401,"All Feilds are Require")
     }
 
     const exits=await User.findOne({email})
 
     if(exits){
-      res.json({
-        success: false,
-        message:"This User Already Exits",
-       
-      });
-     
+    throw new ApiError(400,"This User Already Exits") 
     }
 
     const user = await User.create({ username, email, password });
 
     if(!user){
-       res.json({
-        success: false,
-        message:"Databse Error ......",
-       
-      });
+      throw new ApiError(401,"Error Occur While Creating a User")
     }
-    res.json({
+
+
+    res.status(200).json({
       user: user,
       message:"Sucessfully Craeted",
       success: true,
     });
+  
   };
   
   
@@ -39,7 +34,7 @@ const create = async (req, res) => {
       const {  email, password } = req.body;
            
       if([email,password].some(item=>item.trim()=="")){
-        throw new Error("Email & Password are required")
+        throw new ApiError(401,"All fields are require")
     }
          
 
@@ -47,17 +42,23 @@ const create = async (req, res) => {
     
         
       const checkPassword=password==user.password
+
    if(!checkPassword){
-    res.status(401).json({
-      success: false,
-      message:"Passwrod Incorrect",
-    });
+    throw new ApiError(401,"Password is incorrect......")
+   
    }
+
+
+
+   
+    res.status(200).json({
+      message:"Sucessfully login",
+      success: true,
+    });
+   
   
-      res.status(200).json({
-        message:"Sucessfully login",
-        success: true,
-      });
+     
+
     }
 
     export {create,login}
