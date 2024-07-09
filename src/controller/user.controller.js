@@ -34,7 +34,7 @@ const create = async (req, res) => {
       }
         
       
-         const isCorrect=await user.issPasswordCorrect(password) 
+         const isCorrect=password==user.password 
   
          if (!isCorrect) {
             throw new Error("Password is Incorrect")
