@@ -11,8 +11,8 @@ app.use(cookieParser())
 import userRoute from "./routes/user.route.js"
 app.use("/api/user",userRoute)
 
-import { attendacneRoute } from "./routes/attendance.route.js"
-app.use("/api/attendance",attendacneRoute)
+import { attendanceRoute } from "./routes/attendance.route.js"
+app.use("/api/attendance",attendanceRoute)
 app.get("/",(req,res)=>{
     res.json({
         success:true

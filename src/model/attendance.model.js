@@ -18,4 +18,4 @@ const attendanceSchma=new mongoose.Schema({
 })
 
 
-export const Attendance=mongoose.model("attendacne",attendanceSchma)
+export const Attendance=mongoose.model("attendance",attendanceSchma)
