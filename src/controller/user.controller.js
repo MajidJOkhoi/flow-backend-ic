@@ -1,6 +1,6 @@
 import { User } from "../model/user.model.js";
 import { ApiError } from "../utlis/ApiError.js";
-
+import jwt from "jsonwebtoken"
 const create = async (req, res) => {
     const { username, email, password } = req.body;
     
@@ -47,11 +47,11 @@ const create = async (req, res) => {
     throw new ApiError(401,"Password is incorrect......")
    
    }
-
+   const token=jwt.sign({_id:user._id},process.env.JWT_SECRET)
 
 
    
-    res.status(200).json({
+    res.status(200).cookie("token",token,{httpOnly:true,secure:true}).json({
       message:"Sucessfully login",
       success: true,
     });
