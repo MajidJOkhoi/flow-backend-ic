@@ -16,7 +16,7 @@ const create = async (req, res) => {
     throw new ApiError(400, "This User Already Exits");
   }
 
-  const user = await User.create({ username, email, password });
+  const user = await User.create({ username, email, password ,profilePicture:"",birthDate:"",phoneNo:"",address:{},designation:"",skill:[],branchName:""});
 
   if (!user) {
     throw new ApiError(401, "Error Occur While Creating a User");
@@ -43,13 +43,14 @@ const login = async (req, res) => {
   if (!checkPassword) {
     throw new ApiError(401, "Password is incorrect......");
   }
+  const user_ = await User.findOne({ email }).select("-password");
   const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
   res
     .status(200)
     .cookie("token", token, { httpOnly: true, secure: true })
     .json({
-      user,
+      user_,
       message: "Sucessfully login",
       success: true,
     });
