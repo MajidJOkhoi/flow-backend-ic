@@ -13,7 +13,15 @@ const attendanceSchma=new mongoose.Schema({
      user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
+     },
+     date:{
+      type:String,
+      required:true
+     },
+     duration:{
+      type:Object
      }
+
      
 })
 

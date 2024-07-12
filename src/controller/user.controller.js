@@ -134,4 +134,15 @@ const updateUserRecord = async (req, res) => {
   });
 };
 
-export { create, login, updatePicture, myProfile, updateUserRecord };
+
+const logout=async(req,res)=>{
+  if(req && req.user){
+    res.status(201).clearCookie("token","").json({
+      success:true,
+      message:"Sucessfully Logout"
+    })
+  }
+}
+
+
+export { create, login, updatePicture, myProfile, updateUserRecord,logout };

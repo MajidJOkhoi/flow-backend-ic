@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
   birthDate: {
-    type: Date,
+    type: String,
   },
   designation: {
     type: String,

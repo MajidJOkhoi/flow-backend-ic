@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { checkIn, checkOut } from "../controller/attendance.controller.js";
+import { checkIn, checkOut, getMyAllAttendance, getTodayAttendance } from "../controller/attendance.controller.js";
 import { auth } from "../middleware/auth.js";
 
 
@@ -10,7 +10,8 @@ import { auth } from "../middleware/auth.js";
 
  attendanceRoute.route("/checkIn").post(auth,checkIn)
  attendanceRoute.route("/checkOut").post(auth,checkOut)
-
+attendanceRoute.route("/getTodayAttendance").get(auth,getTodayAttendance)
+attendanceRoute.route("/getMyAllAttendances").get(auth,getMyAllAttendance)
 
 
 export { attendanceRoute}
