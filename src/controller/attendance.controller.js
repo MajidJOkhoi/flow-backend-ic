@@ -76,8 +76,17 @@ const checkOut = async (req, res) => {
     attendance.checkIn.time.toString(),
     checkOutTime.toString()
   );
+let status="present"
+  if(duration.hours <5){
+status="absent"
+  }else if(duration.hours >5 && duration.hours <7){
+    status="early"
+  }else{
+    status="present"
+  }
 
   attendance.duration = duration;
+  attendance.status=status
   attendance.checkOut = { ...checkOut, time: checkOutTime };
   attendance.save();
 
