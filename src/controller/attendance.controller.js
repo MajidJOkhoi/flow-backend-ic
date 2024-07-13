@@ -38,6 +38,17 @@ const checkIn = async (req, res) => {
   if (!checkIn) {
     throw new ApiError(402, "could not detect the location....");
   }
+  const exitsAttendance= await Attendance.findOne({date})
+
+  if(exitsAttendance && exitsAttendance?.checkIn && exitsAttendance?.checkOut){
+    throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
+  }
+
+
+  if(exitsAttendance && exitsAttendance?.checkIn ){
+    throw new ApiError(400, "You cannot check in more than once per day.");
+  }
+
 
   const attendance = await Attendance.create({
     checkIn: { ...checkIn, time: checkInTime },
@@ -65,13 +76,23 @@ const checkOut = async (req, res) => {
   if (!checkOut) {
     throw new ApiError(402, "could not detect the location....");
   }
+
+
   const attendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
   });
 
-  if (!attendance) {
-    throw new ApiError(402, "You Can't CheckOut In this Date....");
+
+  if(!attendance  ){
+    throw new ApiError(400, "You cannot check out before checking in.");
   }
+
+  if(attendance && attendance?.checkIn && attendance?.checkOut){
+    throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
+  }
+
+ 
+
   const duration = getDuration(
     attendance.checkIn.time.toString(),
     checkOutTime.toString()
