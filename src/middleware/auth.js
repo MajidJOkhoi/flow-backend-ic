@@ -4,7 +4,8 @@ import { User } from "../model/user.model.js";
 
 
 const auth=async(req,res,next)=>{
-   const {token}=req.cookies
+   const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "")
+   console.log(token)
      if(!token){
         throw new ApiError("400","unauthorized login......")
      }
