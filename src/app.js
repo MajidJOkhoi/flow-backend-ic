@@ -22,6 +22,18 @@ import { companyRoute } from "./routes/company.route.js"
 app.use("/api/company",companyRoute)
 
 
+import { roleRoute } from "./routes/role.route.js"
+app.use("/api/role",roleRoute)
+
+
+import { designationRoute } from "./routes/designation.route.js"
+app.use("/api/designation",designationRoute)
+
+
+import { jobTypeRoute } from "./routes/jobType.route.js"
+app.use("/api/jobType",jobTypeRoute)
+
+
 app.get("/",(req,res)=>{
     res.json({
         success:true
