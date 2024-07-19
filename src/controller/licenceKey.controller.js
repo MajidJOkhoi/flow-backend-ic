@@ -21,7 +21,7 @@ const createLicenceKey=async(req,res)=>{
     })
 }
 
-const getLicenceKey=async(req,res)=>{
+const authKey=async(req,res)=>{
 
    const {key} =req.body
    if(!key){
@@ -48,4 +48,4 @@ const getLicenceKey=async(req,res)=>{
 }
 
 
-export {createLicenceKey,getLicenceKey}
+export {createLicenceKey,authKey}
