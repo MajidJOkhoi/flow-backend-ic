@@ -13,10 +13,21 @@ app.use("/api/user",userRoute)
 
 import { attendanceRoute } from "./routes/attendance.route.js"
 app.use("/api/attendance",attendanceRoute)
+
+import { licenceKeyRoute } from "./routes/licenceKey.route.js"
+app.use("/api/licenceKey",licenceKeyRoute)
+
+
+import { companyRoute } from "./routes/company.route.js"
+app.use("/api/company",companyRoute)
+
+
 app.get("/",(req,res)=>{
     res.json({
         success:true
     })
 })
+
+
 
 export {app}

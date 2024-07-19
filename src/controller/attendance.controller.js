@@ -62,7 +62,7 @@ const checkIn = async (req, res) => {
   }
 
   res.status(200).json({
-    attendance,
+    checkInTime,
     sucess: true,
     message: "Sucessfully You CheckIn.....",
   });

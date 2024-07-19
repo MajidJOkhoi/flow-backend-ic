@@ -1,30 +1,16 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-  username: {
+  fullName: {
     type: String,
     required: true,
   },
-  profilePicture: {
+  picture: {
     type: String,
   },
-  birthDate: {
+  contact: {
     type: String,
-  },
-  designation: {
-    type: String,
-  },
-  skill: {
-    type: Array,
-  },
-  branchName: {
-    type: String,
-  },
-  phoneNo: {
-    type: String,
-  },
-  address: {
-    type: Object,
+    required:true
   },
   email: {
     type: String,
@@ -34,9 +20,29 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role: {
+  address:{
     type: String,
-    default: "user",
+    required: true,
+  },
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "role",
+  },
+  designation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "designation",
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+  },
+  jobType: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "jobType",
+  },
+  status: {
+    type: Boolean,
+    default: false,
   },
 });
 
