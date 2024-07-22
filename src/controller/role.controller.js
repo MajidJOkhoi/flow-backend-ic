@@ -3,12 +3,16 @@ import { ApiError } from "../utlis/ApiError.js"
 
 
 const createRole=async(req,res)=>{
- const {name} =req.body
- if(!name){
-    throw new ApiError(400,"role name is required")
- }
+   const {name,id} =req.body
+   if(!name){
+      throw new ApiError(400,"role  name is required")
+   }
+  
+   if(!id){
+     throw new ApiError(400,"role id is required")
+  }
 
- const role=await Role.create({name})
+ const role=await Role.create({id,name})
 
  if(!role){
     throw new ApiError(400,"Error occur while creating role")
@@ -17,7 +21,7 @@ const createRole=async(req,res)=>{
     res.status(200).json({
         sucess:true,
         message:"Sucessfully create role",
-        role
+        data:{name:role.name,id:role.id}
     })
 }
 

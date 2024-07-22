@@ -4,12 +4,17 @@ import { ApiError } from "../utlis/ApiError.js"
 
 
 const createDesignation=async(req,res)=>{
- const {name} =req.body
+ const {name,id} =req.body
  if(!name){
     throw new ApiError(400,"designation name is required")
  }
 
- const designation=await Designation.create({name})
+ if(!id){
+   throw new ApiError(400,"designation id is required")
+}
+
+ const designation=await Designation.create({id,name})
+ 
 
  if(!designation){
     throw new ApiError(400,"Error occur while designation")
@@ -18,7 +23,7 @@ const createDesignation=async(req,res)=>{
     res.status(200).json({
         sucess:true,
         message:"Sucessfully create designation",
-        designation
+        data:{name:designation.name,id:designation.id}
     })
 }
 
