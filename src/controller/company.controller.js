@@ -10,49 +10,20 @@ import { ApiError } from "../utlis/ApiError.js"
 
 const companyRegistration=async(req,res)=>{
 
-const {admin,company}=req.body
+const {name,companyOwner,address,email,contact,licenceKey}=req.body
 
 
-
-if(!company){
-    throw new ApiError(400,"provide company details")
-}
-
-if(!admin){
-    throw new ApiError(400,"provide admin details")
-}
-
-
-
-const registration=await Company.create({name:company.name,companyOwner:company.companyOwner,address:company.address,email:company.email,contact:company.contact,licenceKey:company.licenceKey})
+const registration=await Company.create({name,companyOwner,address,email,contact,licenceKey})
 
 if(!registration){
     throw new ApiError(400,"Error occur while registration of company")
 }
 
-const user=await User.create({fullName:admin.fullName,contact:admin.contact,email:admin.email,address:admin.address,password:admin.password,designation:"2",role:"1",jobType:"1"})
- 
-if(!user){
-    throw new ApiError(400,"Error occur while creating admin")
-}
-
-const licencekey=await LicenceKey.findOne({_id:company.licenceKey})
-
-if(!licencekey){
-    throw new ApiError(400,"No record found with this key")
-}
-
-licencekey.status=true
-
-await licencekey.save()
-
-
 
 res.status(200).json({
         sucess:true,
         message:"Sucessfully company registered",
-        registration,
-        user
+        data:{_id:registration._id}
     })
 }
 

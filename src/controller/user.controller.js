@@ -1,3 +1,4 @@
+import { LicenceKey } from "../model/LicenceKey.model.js";
 import { User } from "../model/user.model.js";
 import { ApiError } from "../utlis/ApiError.js";
 import { cloudinaryUpload } from "../utlis/cloudinary.js";
@@ -146,4 +147,27 @@ const logout=async(req,res)=>{
 }
 
 
-export { create, login, updatePicture, myProfile, updateUserRecord,logout };
+const createAdmin=async(req,res)=>{
+  const {fullName,contact,email,address,password,companyId,licenceKey}=req.body
+
+  const admin=await User.create({fullName,contact,email,address,password,companyId})
+
+  if(!admin){
+    throw new ApiError(400,"Error occur while creating admin")
+}
+
+const licencekey=await LicenceKey.findOne({_id:licenceKey})
+
+licencekey.status=true
+
+await licencekey.save()
+
+res.status(200).json({
+  sucess:true,
+  message:"Sucessfully created admin",
+  admin
+})
+
+}
+
+export { create, login, updatePicture, myProfile, updateUserRecord,logout,createAdmin };
