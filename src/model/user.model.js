@@ -44,6 +44,11 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  compnayId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "company",
+  },
+  
 });
 
 export const User = mongoose.model("user", UserSchema);
