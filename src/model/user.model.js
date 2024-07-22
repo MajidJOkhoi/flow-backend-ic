@@ -25,20 +25,20 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   role: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "role",
+    type:String,
+    required:true
   },
   designation: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "designation",
+    type:String,
+    required:true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
   jobType: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "jobType",
+    type:String,
+    required:true
   },
   status: {
     type: Boolean,
