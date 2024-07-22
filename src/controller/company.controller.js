@@ -10,7 +10,7 @@ import { ApiError } from "../utlis/ApiError.js"
 
 const companyRegistration=async(req,res)=>{
 
-const {admin,company}=req.body
+const {company}=req.body
 
 
 
@@ -18,14 +18,6 @@ if(!company){
     throw new ApiError(400,"provide company details")
 }
 
-if(!admin){
-    throw new ApiError(400,"provide admin details")
-}
-
-
-const designation=await Designation.findOne({name:"Adminstrator"})
-const role=await Role.findOne({name:"Admin"})
-const jobType=await JobType.findOne({name:"Full Time"})
 
 
 const registration=await Company.create({name:company.name,companyOwner:company.companyOwner,address:company.address,email:company.email,contact:company.contact,licenceKey:company.licenceKey})
@@ -34,11 +26,7 @@ if(!registration){
     throw new ApiError(400,"Error occur while registration of company")
 }
 
-const user=await User.create({fullName:admin.fullName,contact:admin.contact,email:admin.email,address:admin.address,password:admin.password,designation,role,jobType})
- 
-if(!user){
-    throw new ApiError(400,"Error occur while creating admin")
-}
+
 
 const licencekey=await LicenceKey.findOne({_id:company.licenceKey})
 
@@ -55,8 +43,8 @@ await licencekey.save()
 res.status(200).json({
         sucess:true,
         message:"Sucessfully company registered",
-        company,
-        admin
+        registration,
+      
     })
 }
 
