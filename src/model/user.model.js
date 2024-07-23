@@ -44,7 +44,7 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  compnayId: {
+  companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "company",
   },

@@ -35,7 +35,7 @@ const authKey=async(req,res)=>{
    }
 
    if(Licencekey.status===true){
-      throw new ApiError(400,"this key alredy in use")
+      throw new ApiError(400,"this key is already in use")
    }
   
       res.status(200).json({

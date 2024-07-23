@@ -148,9 +148,20 @@ const logout=async(req,res)=>{
 
 
 const createAdmin=async(req,res)=>{
-  const {fullName,contact,email,address,password,companyId,licenceKey}=req.body
 
-  const admin=await User.create({fullName,contact,email,address,password,companyId,designation:"2",role:"1",jobType:"1"})
+const {fullName,contact,email,address,password,companyId,licenceKey}=req.body
+
+if([fullName,contact,address,email,password,companyId,licenceKey].some(item=>item.trim()==="")){
+  throw new ApiError(400,"All Fields are require....")
+}
+
+const existsAdmin=await User.findOne({email})
+
+if(existsAdmin){
+  throw new ApiError(400,"This email already exists")
+}
+
+const admin=await User.create({fullName,contact,email,address,password,companyId,designation:"2",role:"1",jobType:"1"})
 
   if(!admin){
     throw new ApiError(400,"Error occur while creating admin")
