@@ -3,7 +3,7 @@ import { createJobType, getAllJobTypes } from "../controller/jobType.controller.
  const jobTypeRoute=Router()
 
  jobTypeRoute.route("/create").post(createJobType)
- jobTypeRoute.route("/getALlJobTypes").post(getAllJobTypes)
+ jobTypeRoute.route("/getALlJobTypes").get(getAllJobTypes)
 
 
 

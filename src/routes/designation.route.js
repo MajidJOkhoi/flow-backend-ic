@@ -4,7 +4,7 @@ import { createDesignation, getAllDesignation } from "../controller/designation.
  const designationRoute=Router()
 
  designationRoute.route("/create").post(createDesignation)
- designationRoute.route("/getAllJobTypes").get(getAllDesignation)
+ designationRoute.route("/getAllDesignation").get(getAllDesignation)
 
 
 
