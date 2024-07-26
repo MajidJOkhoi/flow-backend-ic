@@ -35,6 +35,7 @@ const checkIn = async (req, res) => {
   const { checkIn } = req.body;
   const date = new Date().toDateString();
   const checkInTime = new Date().toLocaleTimeString();
+  
   if (!checkIn) {
     throw new ApiError(402, "could not detect the location....");
   }
@@ -62,7 +63,7 @@ const checkIn = async (req, res) => {
   }
 
   res.status(200).json({
-    checkInTime,
+    time:attendance.checkIn.time,
     sucess: true,
     message: "Sucessfully You CheckIn.....",
   });

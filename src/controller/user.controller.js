@@ -193,4 +193,20 @@ res.status(200).json({
 
 }
 
-export { create, login, updatePicture, myProfile, updateUserRecord,logout,createAdmin };
+const getMyAllUsers=async(req,res)=>{
+  
+  const myUsers=await User.find({companyId:req.user.companyId})
+  if(!myUsers){
+   throw new ApiError(400,"error occur while getting all users your company")
+  }
+
+
+  res.status(200).json({
+    message: "Sucessfully get all users of your Company ",
+    success: true,
+    myUsers
+  });
+
+}
+
+export { create, login, updatePicture, myProfile, updateUserRecord,logout,createAdmin ,getMyAllUsers};
