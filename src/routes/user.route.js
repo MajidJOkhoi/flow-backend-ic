@@ -5,7 +5,7 @@ import {auth} from "../middleware/auth.js"
  const userRoute=Router()
 
 
- userRoute.route("/create").post(create)
+ userRoute.route("/create").post(auth,create)
  userRoute.route("/createAdmin").post(createAdmin)
  userRoute.route("/login").post(login)
  userRoute.route("/logout").post(auth,logout)

@@ -38,16 +38,16 @@ const checkIn = async (req, res) => {
   if (!checkIn) {
     throw new ApiError(402, "could not detect the location....");
   }
-  const exitsAttendance= await Attendance.findOne({date})
+  // const exitsAttendance= await Attendance.findOne({date})
 
-  if(exitsAttendance && exitsAttendance?.checkIn && exitsAttendance?.checkOut){
-    throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
-  }
+  // if(exitsAttendance && exitsAttendance?.checkIn && exitsAttendance?.checkOut){
+  //   throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
+  // }
 
 
-  if(exitsAttendance && exitsAttendance?.checkIn ){
-    throw new ApiError(400, "You cannot check in more than once per day.");
-  }
+  // if(exitsAttendance && exitsAttendance?.checkIn ){
+  //   throw new ApiError(400, "You cannot check in more than once per day.");
+  // }
 
 
   const attendance = await Attendance.create({
@@ -87,9 +87,9 @@ const checkOut = async (req, res) => {
     throw new ApiError(400, "You cannot check out before checking in.");
   }
 
-  if(attendance && attendance?.checkIn && attendance?.checkOut){
-    throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
-  }
+  // if(attendance && attendance?.checkIn && attendance?.checkOut){
+  //   throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
+  // }
 
  
 

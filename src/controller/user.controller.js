@@ -4,12 +4,23 @@ import { ApiError } from "../utlis/ApiError.js";
 import { cloudinaryUpload } from "../utlis/cloudinary.js";
 
 import jwt from "jsonwebtoken";
-const create = async (req, res) => {
-  const { username, email, password } = req.body;
 
-  if ([username, email, password].some((item) => item?.trim() == "")) {
-    throw new ApiError(401, "All Feilds are Require");
+
+const create = async (req, res) => {
+   
+  const admin=req.user._id
+
+  if(!admin){
+     throw new ApiError(400,"Login first")
   }
+  const { fullName, email,password, address,contact,jobType,role,designation,companyId } = req.body;
+   
+  if ([fullName, email, password,contact,address,jobType,role,designation,companyId].some((item) => item?.trim() == "")) {
+    throw new ApiError(400, "All Feilds are Require");
+  }
+
+  
+
 
   const exits = await User.findOne({ email });
 
@@ -17,17 +28,18 @@ const create = async (req, res) => {
     throw new ApiError(400, "This User Already Exits");
   }
 
-  const user = await User.create({ username, email, password ,profilePicture:"",birthDate:"",phoneNo:"",address:{},designation:"",skill:[],branchName:""});
+  const user = await User.create({ fullName, email, password ,contact,address,jobType,role,designation,companyId,createdBy:admin});
 
   if (!user) {
     throw new ApiError(401, "Error Occur While Creating a User");
   }
 
   res.status(200).json({
-    user: user,
     message: "Sucessfully user created",
     success: true,
+    user: user,
   });
+
 };
 
 const login = async (req, res) => {
