@@ -35,7 +35,7 @@ const checkIn = async (req, res) => {
   const { checkIn } = req.body;
   const date = new Date().toDateString();
   const checkInTime = new Date().toLocaleTimeString();
-  
+
   if (!checkIn) {
     throw new ApiError(402, "could not detect the location....");
   }
@@ -45,11 +45,9 @@ const checkIn = async (req, res) => {
   //   throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
   // }
 
-
   // if(exitsAttendance && exitsAttendance?.checkIn ){
   //   throw new ApiError(400, "You cannot check in more than once per day.");
   // }
-
 
   const attendance = await Attendance.create({
     checkIn: { ...checkIn, time: checkInTime },
@@ -63,7 +61,7 @@ const checkIn = async (req, res) => {
   }
 
   res.status(200).json({
-    time:attendance.checkIn.time,
+    time: attendance.checkIn.time,
     sucess: true,
     message: "Sucessfully You CheckIn.....",
   });
@@ -78,13 +76,11 @@ const checkOut = async (req, res) => {
     throw new ApiError(402, "could not detect the location....");
   }
 
-
   const attendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
   });
 
-
-  if(!attendance  ){
+  if (!attendance) {
     throw new ApiError(400, "You cannot check out before checking in.");
   }
 
@@ -92,23 +88,21 @@ const checkOut = async (req, res) => {
   //   throw new ApiError(400, "You cannot mark attendance more than once for the same day.");
   // }
 
- 
-
   const duration = getDuration(
     attendance.checkIn.time.toString(),
     checkOutTime.toString()
   );
-let status="present"
-  if(duration.hours <5){
-status="absent"
-  }else if(duration.hours >5 && duration.hours <7){
-    status="early"
-  }else{
-    status="present"
+  let status = "present";
+  if (duration.hours < 5) {
+    status = "absent";
+  } else if (duration.hours > 5 && duration.hours < 7) {
+    status = "early";
+  } else {
+    status = "present";
   }
 
   attendance.duration = duration;
-  attendance.status=status
+  attendance.status = status;
   attendance.checkOut = { ...checkOut, time: checkOutTime };
   attendance.save();
 
@@ -139,28 +133,51 @@ const getTodayAttendance = async (req, res) => {
     sucess: true,
     message: "Sucessfully get today Attendance.....",
   });
-
 };
 
 const getMyAllAttendance = async (req, res) => {
-    const _id = req?.user._id;
-    if (!_id) {
-      throw new ApiError(400, "unauthorized action , Login First");
-    }
-    const attendances = await Attendance.find({user:req.user._id});
-    
-    if (!attendances) {
-        throw new ApiError(400, "Error occur fetching your attendance");
-      }
+  const _id = req?.user._id;
+  if (!_id) {
+    throw new ApiError(400, "unauthorized action , Login First");
+  }
+  const attendances = await Attendance.find({ user: req.user._id });
 
+  if (!attendances) {
+    throw new ApiError(400, "Error occur fetching your attendance");
+  }
 
-      res.json({
-        attendances,
-        sucess: true,
-        message: "Sucessfully get all Attendance.....",
-      });
+  res.json({
+    attendances,
+    sucess: true,
+    message: "Sucessfully get all Attendance.....",
+  });
+};
 
-  };
-  
+const getMyMonthAttendance = async (req, res) => {
+  let { month } = req.params;
+  month = month.slice(0, 3);
 
-export { checkIn, checkOut, getTodayAttendance,getMyAllAttendance };
+  const monthAttendance = await Attendance.find({
+    $and: [{ date: { $regex: month, $options: "i" } }, { user: req.user._id }],
+  }).select("-user");
+  if (monthAttendance && monthAttendance.length == 0) {
+    res.json({
+      success: true,
+      message: "No attendance record found ",
+    });
+  }
+
+  res.json({
+    success: true,
+    message: "Sucessfully get the attendance of month",
+    monthAttendance,
+  });
+};
+
+export {
+  checkIn,
+  checkOut,
+  getTodayAttendance,
+  getMyAllAttendance,
+  getMyMonthAttendance,
+};
