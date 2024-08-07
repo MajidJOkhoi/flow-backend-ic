@@ -1,6 +1,7 @@
 import { ApiError } from "../utlis/ApiError.js";
 import { Attendance } from "../model/attendance.model.js";
 
+
 function parseTimeString(timeString) {
   const [time, modifier] = timeString.split(" ");
   let [hours, minutes, seconds] = time.split(":").map(Number);
