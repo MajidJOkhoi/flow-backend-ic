@@ -323,6 +323,26 @@ const deleteUser = async (req, res,next) => {
   });
 };
 
+const getTeamHeadDetails=async(req,res,next)=>{
+  const teamHeads = await User.aggregate([
+    {
+      $match:{role:"2"},
+    },
+   
+    {
+      $project: {
+        _id: 1,
+        fullName: 1,  
+        email: 1, 
+        status: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    success:true,message:"successfully get all teamHeads names",teamHeads
+  })
+}
 export {
   create,
   login,
@@ -333,4 +353,5 @@ export {
   createAdmin,
   getMyAllUsers,
   deleteUser,
+  getTeamHeadDetails
 };

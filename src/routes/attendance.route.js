@@ -5,6 +5,7 @@ import { auth } from "../middleware/auth.js";
 
 
 
+
  const attendanceRoute=Router()
 
 
@@ -14,6 +15,7 @@ attendanceRoute.route("/getTodayAttendance").get(auth,getTodayAttendance)
 attendanceRoute.route("/getMyAllAttendances").get(auth,getMyAllAttendance)
 attendanceRoute.route("/getMyMonthAttendance/:month").get(auth,getMyMonthAttendance)
 attendanceRoute.route("/getUsersAttendance").get(getAllUserAttendance)
+
 
 
 export { attendanceRoute}
