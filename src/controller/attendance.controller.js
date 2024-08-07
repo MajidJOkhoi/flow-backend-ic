@@ -112,6 +112,7 @@ const checkOut = async (req, res) => {
     message: "Sucessfully You CheckOut.....",
   });
 };
+
 const getTodayAttendance = async (req, res) => {
   const _id = req?.user._id;
   const date = new Date().toDateString();
@@ -174,10 +175,44 @@ const getMyMonthAttendance = async (req, res) => {
   });
 };
 
+const getAllUserAttendance=async(req,res)=>{
+const usersAttendance=await Attendance.aggregate([
+  {
+    $lookup:{
+      from:"users",
+      localField:"user",
+      foreignField:"_id",
+      as:"user"
+    }
+  },
+  {
+ $addFields:{
+  user:{$arrayElemAt:["$user",0]}
+ }
+  },
+  {
+    $project:{
+      _id:1,
+      checkIn:1,
+      checkOut:1,
+      date:1,
+      duration:1,
+      status:1,
+      user:{_id:"$user._id",fullName:"$user.fullName",email:"$user.email"}
+    }
+  }
+])
+
+res.status(200).json({
+  success:true,message:"successfully get all users attendance",usersAttendance
+})
+}
+
 export {
   checkIn,
   checkOut,
   getTodayAttendance,
   getMyAllAttendance,
   getMyMonthAttendance,
+  getAllUserAttendance
 };

@@ -7,13 +7,13 @@ const auth=async(req,res,next)=>{
    const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "")
    
      if(!token){
-        throw new ApiError("400","unauthorized login......")
+        return next( new ApiError("400","unauthorized login......"))
      }
 
      const {_id}=jwt.verify(token,process.env.JWT_SECRET)
      const user=await User.findOne({_id}).select("-password")
      req.user=user
-   next()
+   return next()
 }
 
 

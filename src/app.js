@@ -39,6 +39,10 @@ app.use("/api/jobType",jobTypeRoute)
 import { projectRouter } from "./routes/project.route.js"
 app.use("/api/project",projectRouter)
 
+import { leaveRouter } from "./routes/leave.route.js"
+app.use("/api/leave",leaveRouter)
+
+
 app.get("/",(req,res)=>{
     res.json({
         success:true

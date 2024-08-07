@@ -9,7 +9,7 @@ const create = async (req, res, next) => {
   const admin = req.user._id;
 
   if (!admin) {
-    next(new ApiError(400, "Login first"));
+   return next(new ApiError(400, "Login first"));
   }
   const {
     fullName,
@@ -36,13 +36,13 @@ const create = async (req, res, next) => {
       companyId,
     ].some((item) => item?.trim() == "")
   ) {
-    next(new ApiError(400, "All Feilds are Require"));
+    return next(new ApiError(400, "All Feilds are Require"));
   }
 
   const exits = await User.findOne({ email });
 
   if (exits) {
-    next(new ApiError(400, "This User Already Exits"));
+    return  next(new ApiError(400, "This User Already Exits"));
   }
 
   const user = await User.create({
@@ -59,7 +59,7 @@ const create = async (req, res, next) => {
   });
 
   if (!user) {
-    next(new ApiError(401, "Error Occur While Creating a User"));
+    return  next(new ApiError(401, "Error Occur While Creating a User"));
   }
 
   res.status(200).json({
@@ -70,6 +70,7 @@ const create = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+ try {
   const { email, password } = req.body;
 
   if ([email, password].some((item) => item.trim() == "")) {
@@ -77,6 +78,10 @@ const login = async (req, res, next) => {
   }
 
   const user = await User.findOne({ email });
+  if (!user) {
+    return next(new ApiError(400, "Incorrect Email"));
+  }
+  
 
   const checkPassword = password == user?.password;
 
@@ -95,25 +100,28 @@ const login = async (req, res, next) => {
       message: "Sucessfully login",
       success: true,
     });
+ } catch (error) {
+  next(error)
+ }
 };
 
 const updatePicture = async (req, res) => {
   const _id = req.user._id;
   const imagePath = req.file?.path;
   if (!_id) {
-    throw new ApiError(400, "unauthorized action , Login First");
+    return next(ApiError(400, "unauthorized action , Login First"))
   }
   if (!imagePath) {
-    throw new ApiError(401, "Please provide the image path");
+    return next(ApiError(401, "Please provide the image path"))
   }
   const cloudPathImage = await cloudinaryUpload(imagePath);
   if (!cloudPathImage) {
-    throw new ApiError(401, "Try again image does not upload ");
+    return next(ApiError(401, "Try again image does not upload "))
   }
 
   const user = await User.findOne({ _id });
   if (!user) {
-    throw new ApiError(400, "user does not exits  ");
+    return next( ApiError(400, "user does not exits  "))
   }
 
   user.profilePicture = cloudPathImage?.url || user.profilePicture;
@@ -126,10 +134,10 @@ const updatePicture = async (req, res) => {
   });
 };
 
-const myProfile = async (req, res) => {
+const myProfile = async (req, res,next) => {
   const _id = req?.user._id;
   if (!_id) {
-    throw new ApiError(400, "unauthorized action , Login First");
+    return new ApiError(400, "unauthorized action , Login First");
   }
 
   const user = await User.aggregate([
@@ -176,7 +184,7 @@ const myProfile = async (req, res) => {
   ]);
 
   if (!user) {
-    throw new ApiError(400, "user does not exits  ");
+    return next(ApiError(400, "user does not exits  "))
   }
 
   res.status(200).json({
@@ -186,18 +194,18 @@ const myProfile = async (req, res) => {
   });
 };
 
-const updateUserRecord = async (req, res) => {
+const updateUserRecord = async (req, res,next) => {
   const { birthDate, designation, skill, branchName, phoneNo, address } =
     req.body;
   const _id = req?.user._id;
 
   if (!_id) {
-    throw new ApiError(400, "unauthorized action , Login First");
+    return next(ApiError(400, "unauthorized action , Login First"))
   }
 
   const user = await User.findOne({ _id });
   if (!user) {
-    throw new ApiError(400, "user does not exits  ");
+    return next(ApiError(400, "user does not exits  "))
   }
 
   user.birthDate = birthDate;
@@ -226,7 +234,7 @@ const logout = async (req, res) => {
   }
 };
 
-const createAdmin = async (req, res) => {
+const createAdmin = async (req, res,next) => {
   const { fullName, contact, email, address, password, companyId, licenceKey } =
     req.body;
 
@@ -235,13 +243,13 @@ const createAdmin = async (req, res) => {
       (item) => item.trim() === ""
     )
   ) {
-    throw new ApiError(400, "All Fields are require....");
+    return next(ApiError(400, "All Fields are require....")) 
   }
 
   const existsAdmin = await User.findOne({ email });
 
   if (existsAdmin) {
-    throw new ApiError(400, "This email already exists");
+    return next(ApiError(400, "This email already exists"))
   }
 
   const admin = await User.create({
@@ -257,7 +265,7 @@ const createAdmin = async (req, res) => {
   });
 
   if (!admin) {
-    throw new ApiError(400, "Error occur while creating admin");
+    return next(ApiError(400, "Error occur while creating admin"))
   }
 
   const licencekey = await LicenceKey.findOne({ _id: licenceKey });
@@ -273,10 +281,10 @@ const createAdmin = async (req, res) => {
   });
 };
 
-const getMyAllUsers = async (req, res) => {
+const getMyAllUsers = async (req, res,next) => {
   const myUsers = await User.find({ companyId: req.user.companyId });
   if (!myUsers) {
-    throw new ApiError(400, "error occur while getting all users your company");
+    return next( ApiError(400, "error occur while getting all users your company"))
   }
 
   res.status(200).json({
@@ -286,17 +294,17 @@ const getMyAllUsers = async (req, res) => {
   });
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res,next) => {
   const { userId } = req.params;
 
   if (!userId) {
-    throw new ApiError(400, "User id is required");
+    return next(ApiError(400, "User id is required"))
   }
 
   const user = await User.findOne({ _id: userId });
 
   if (!user) {
-    throw new ApiError(400, "This user does not exists");
+    return next(ApiError(400, "This user does not exists"))
   }
 
   const delUser = await User.updateOne(
@@ -305,7 +313,7 @@ const deleteUser = async (req, res) => {
   );
 
   if (!delUser) {
-    throw new ApiError(400, "Error occur while deleting this user");
+    return next(ApiError(400, "Error occur while deleting this user"))
   }
 
   res.status(200).json({
