@@ -164,10 +164,8 @@ const getMyMonthAttendance = async (req, res) => {
     $and: [{ date: { $regex: month, $options: "i" } }, { user: req.user._id }],
   }).select("-user");
   if (monthAttendance && monthAttendance.length == 0) {
-    res.json({
-      success: true,
-      message: "No attendance record found ",
-    });
+   return next(400,"No attendance record found ") 
+
   }
 
   res.json({
