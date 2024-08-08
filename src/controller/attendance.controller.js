@@ -156,7 +156,7 @@ const getMyAllAttendance = async (req, res,next) => {
   });
 };
 
-const getMyMonthAttendance = async (req, res) => {
+const getMyMonthAttendance = async (req, res,next) => {
   let { month } = req.params;
   month = month.slice(0, 3);
 
@@ -164,7 +164,7 @@ const getMyMonthAttendance = async (req, res) => {
     $and: [{ date: { $regex: month, $options: "i" } }, { user: req.user._id }],
   }).select("-user");
   if (monthAttendance && monthAttendance.length == 0) {
-   return next(400,"No attendance record found ") 
+   return next(new ApiError(400,"No attendance record found")) 
 
   }
 
