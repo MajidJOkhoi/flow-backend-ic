@@ -208,11 +208,31 @@ res.status(200).json({
 })
 }
 
+const getMyMonthAttendanceById = async (req, res,next) => {
+  let { userid,month } = req.query;
+  month = month.slice(0, 3);
+
+  const monthAttendance = await Attendance.find({
+    $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
+  }).select("-user");
+  if (monthAttendance && monthAttendance.length == 0) {
+   return next(new ApiError(400,"No attendance record found")) 
+
+  }
+
+  res.json({
+    success: true,
+    message: "Sucessfully get the attendance of month by user id",
+  monthAttendance
+  });
+};
+
 export {
   checkIn,
   checkOut,
   getTodayAttendance,
   getMyAllAttendance,
   getMyMonthAttendance,
-  getAllUserAttendance
+  getAllUserAttendance,
+  getMyMonthAttendanceById
 };
