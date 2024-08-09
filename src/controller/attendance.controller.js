@@ -89,7 +89,7 @@ const checkOut = async (req, res,next) => {
 
   const duration = getDuration(
     attendance.checkIn.time.toString(),
-    checkOutTime.toString()
+    checkOut.time.toString()
   );
 
   let status = "present";
