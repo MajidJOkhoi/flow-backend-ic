@@ -33,9 +33,8 @@ function getDuration(startTime, endTime) {
 }
 
 const checkIn = async (req, res,next) => {
-  const { checkIn } = req.body;
-  const date = new Date().toDateString();
-  const checkInTime = new Date().toLocaleTimeString();
+  const { checkIn ,date} = req.body;
+
 
   if (!checkIn) {
   return  next(new ApiError(402, "could not detect the location...."))
@@ -51,7 +50,7 @@ const checkIn = async (req, res,next) => {
   }
 
   const attendance = await Attendance.create({
-    checkIn: { ...checkIn, time: checkInTime },
+    checkIn,
     checkOut: {},
     user: req.user._id,
     date,
@@ -69,9 +68,8 @@ const checkIn = async (req, res,next) => {
 };
 
 const checkOut = async (req, res,next) => {
-  const { checkOut } = req.body;
-  const date = new Date().toDateString();
-  const checkOutTime = new Date().toLocaleTimeString();
+  const { checkOut ,date} = req.body;
+
 
   if (!checkOut) {
   return  next(new ApiError(402, "could not detect the location...."))
