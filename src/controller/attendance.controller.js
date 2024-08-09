@@ -103,7 +103,7 @@ const checkOut = async (req, res,next) => {
 
   attendance.duration = duration;
   attendance.status = status;
-  attendance.checkOut = { ...checkOut, time: checkOutTime };
+  attendance.checkOut = checkOut;
   attendance.save();
 
   res.json({
