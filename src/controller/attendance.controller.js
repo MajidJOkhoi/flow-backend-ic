@@ -37,7 +37,7 @@ const checkIn = async (req, res,next) => {
 
 
   if (!checkIn) {
-  return  next(new ApiError(402, "could not detect the location...."))
+  return  next(new ApiError(402, "could not detect the location..."))
   }
   const exitsAttendance= await Attendance.findOne({date})
 
