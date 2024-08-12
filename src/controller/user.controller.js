@@ -127,13 +127,16 @@ const html=`<!DOCTYPE html>
             text-align: center;
             padding: 20px;
             font-size: 14px;
-            color: #777777;
-            background-color: #eeeeee;
+            color: #ffffff;
+            background-color: #a32b2e;
         }
         .email-footer a {
-            color: #4CAF50;
+            color: #96d7e9;
             text-decoration: none;
         }
+       .email-footer a:hover{
+        color: #74bcdf;
+       }     
     </style>
 </head>
 <body>
