@@ -59,21 +59,28 @@ const checkIn = async (req, res,next) => {
   if (!attendance) {
   return  next(new ApiError(400, "Error occur while checkIn  "))
   }
+const office=false
+
+if(checkIn.latitude <= 26.2318869 || checkIn.latitude >= 26.2318100){
+  const office=true
+}
 
   res.status(200).json({
-    time: attendance.checkIn.time,
     sucess: true,
     message: "Sucessfully You CheckIn.....",
+    time: attendance.checkIn.time,
+    office
   });
 };
 
 const checkOut = async (req, res,next) => {
-  const { checkOut ,date} = req.body;
+  const { checkOut,date} = req.body;
 
 
   if (!checkOut) {
   return  next(new ApiError(402, "could not detect the location...."))
   }
+
 
   const attendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
@@ -105,11 +112,17 @@ const checkOut = async (req, res,next) => {
   attendance.status = status;
   attendance.checkOut = checkOut;
   attendance.save();
+  const office=false
+
+if(checkIn.latitude <= 26.2318869 || checkIn.latitude >= 26.2318100){
+  const office=true
+}
 
   res.json({
-    attendance,
     sucess: true,
     message: "Sucessfully You CheckOut.....",
+    attendance,
+    office
   });
 };
 
