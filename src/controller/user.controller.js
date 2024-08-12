@@ -62,8 +62,8 @@ const create = async (req, res, next) => {
     return  next(new ApiError(401, "Error Occur While Creating a User"));
   }
 //send email to user with credentials
-const to=email
-const subject="Account Details"
+
+
 const text=`Hello ${fullName}`
 const html=`<!DOCTYPE html>
 <html lang="en">
@@ -159,7 +159,12 @@ const html=`<!DOCTYPE html>
 </body>
 </html>
 `
-await sendMail(to,subject,text,html)
+
+const emailInfo=await sendMail({to:email,subject:"Account Details",text,html})
+
+if(!emailInfo){
+  return  next(new ApiError(401, "Error Occur While Sending Email to User"));
+}
 
   res.status(200).json({
     message: "Sucessfully user created",
