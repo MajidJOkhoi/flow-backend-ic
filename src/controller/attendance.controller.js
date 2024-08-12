@@ -112,10 +112,10 @@ const checkOut = async (req, res,next) => {
   attendance.status = status;
   attendance.checkOut = checkOut;
   attendance.save();
-  const office=false
+  let office=false
 
 if(checkIn.latitude <= 26.2318869 || checkIn.latitude >= 26.2318100){
-  const office=true
+   office=true
 }
 
   res.json({
