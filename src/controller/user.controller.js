@@ -2,7 +2,7 @@ import { LicenceKey } from "../model/LicenceKey.model.js";
 import { User } from "../model/user.model.js";
 import { ApiError } from "../utlis/ApiError.js";
 import { cloudinaryUpload } from "../utlis/cloudinary.js";
-
+import {sendMail} from "../utlis/sendMail.js"
 import jwt from "jsonwebtoken";
 
 const create = async (req, res, next) => {
@@ -61,6 +61,105 @@ const create = async (req, res, next) => {
   if (!user) {
     return  next(new ApiError(401, "Error Occur While Creating a User"));
   }
+//send email to user with credentials
+const to=email
+const subject="Account Details"
+const text=`Hello ${fullName}`
+const html=`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: none;
+            width: 100%;
+            height: 100%;
+        }
+        .email-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .email-header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 20px;
+            color: #333333;
+        }
+        .email-body h2 {
+            color: #4CAF50;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .email-body p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .credentials {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #eeeeee;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .credentials p {
+            margin: 0;
+            font-weight: bold;
+        }
+        .email-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #777777;
+            background-color: #eeeeee;
+        }
+        .email-footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            Welcome to Our Service!
+        </div>
+        <div class="email-body">
+            <h2>Hello [User Name],</h2>
+            <p>Thank you for signing up. Your account has been successfully created.</p>
+            <div class="credentials">
+                <p>Email: ${email}</p>
+                <p>Password: ${password}</p>
+            </div>
+            <p>Please keep this information safe. You can log in to your account using the credentials provided above.</p>
+            <p>If you have any questions or need further assistance, feel free to reply to this email or contact our support team.</p>
+        </div>
+        <div class="email-footer">
+            <p>&copy; 2024 Our Service. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </div>
+</body>
+</html>
+`
+await sendMail(to,subject,text,html)
 
   res.status(200).json({
     message: "Sucessfully user created",
