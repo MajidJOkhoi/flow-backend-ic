@@ -92,7 +92,7 @@ const html=`<!DOCTYPE html>
             overflow: hidden;
         }
         .email-header {
-            background-color: #4CAF50;
+            background-color: #a32b2e;
             color: white;
             text-align: center;
             padding: 20px 0;
@@ -103,7 +103,7 @@ const html=`<!DOCTYPE html>
             color: #333333;
         }
         .email-body h2 {
-            color: #4CAF50;
+            color: #a32b2e;
             font-size: 22px;
             margin-bottom: 20px;
         }
@@ -139,11 +139,11 @@ const html=`<!DOCTYPE html>
 <body>
     <div class="email-container">
         <div class="email-header">
-            Welcome to Our Service!
+            Welcome to Icreativez Technology Nawabshah
         </div>
         <div class="email-body">
-            <h2>Hello [User Name],</h2>
-            <p>Thank you for signing up. Your account has been successfully created.</p>
+            <h2>Hello ${fullName},</h2>
+            <p>Your account has been successfully created.</p>
             <div class="credentials">
                 <p>Email: ${email}</p>
                 <p>Password: ${password}</p>
