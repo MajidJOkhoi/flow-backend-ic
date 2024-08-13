@@ -39,19 +39,16 @@ const checkIn = async (req, res, next) => {
     return next(new ApiError(402, "could not detect the location..."));
   }
 
-  const exitsAttendance = await Attendance.findOne({ date });
+  const exitsAttendance = await Attendance.findOne({
+    $and: [{ date }, { user: req.user._id }],
+  });
 
   if (
     exitsAttendance &&
     exitsAttendance?.checkIn &&
     exitsAttendance?.checkOut
   ) {
-    return next(
-      new ApiError(
-        400,
-        "You cannot mark attendance more than once for the same day."
-      )
-    );
+    return next(new ApiError(400,"You cannot mark attendance more than once for the same day."));
   }
 
   if (exitsAttendance && exitsAttendance?.checkIn) {
