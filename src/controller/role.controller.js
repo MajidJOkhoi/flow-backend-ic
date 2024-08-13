@@ -25,14 +25,19 @@ const createRole=async(req,res)=>{
     })
 }
 
-const getAllRoles=async(req,res)=>{
-  
-   const roles=await Role.find()
-  
+const getAllRoles=async(req,res,next)=>{
+  let roles;
+   if(req.user.role=="2"){
+       roles=await Role.findOne({id:"3"})
+   }else{
+      roles=await Role.find()
+   }
+   
    if(!roles){
-      throw new ApiError(400,"No any role find")
+      return next( new ApiError(400,"No any role find"))
    }
   
+   
       res.status(200).json({
           sucess:true,
           message:"Sucessfully get all roles",
