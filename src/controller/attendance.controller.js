@@ -121,7 +121,6 @@ const checkOut = async (req, res, next) => {
     sucess: true,
     message: "Sucessfully You CheckOut.....",
     attendance,
-    office,
   });
 };
 
