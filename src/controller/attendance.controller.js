@@ -117,7 +117,7 @@ const checkOut = async (req, res, next) => {
   attendance.checkOut = checkOut;
   attendance.save();
 
-  res.json({
+  res.status(200).json({
     sucess: true,
     message: "Sucessfully You CheckOut.....",
     attendance,
