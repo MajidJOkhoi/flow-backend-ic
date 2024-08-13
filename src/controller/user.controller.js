@@ -389,7 +389,7 @@ const createAdmin = async (req, res,next) => {
 };
 
 const getMyAllUsers = async (req, res,next) => {
-  const myUsers = await User.find({ companyId: req.user.companyId });
+  const myUsers = await User.find({ companyId: req.user.companyId ,status:false});
   if (!myUsers) {
     return next( ApiError(400, "error occur while getting all users your company"))
   }
