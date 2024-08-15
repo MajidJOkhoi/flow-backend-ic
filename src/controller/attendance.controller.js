@@ -1,6 +1,6 @@
 import { ApiError } from "../utlis/ApiError.js";
 import { Attendance } from "../model/attendance.model.js";
-import { User } from "../model/user.model.js";
+import mongoose from "mongoose";
 
 function parseTimeString(timeString) {
   const [time, modifier] = timeString.split(" ");
@@ -48,7 +48,12 @@ const checkIn = async (req, res, next) => {
     exitsAttendance?.checkIn &&
     exitsAttendance?.checkOut
   ) {
-    return next(new ApiError(400,"You cannot mark attendance more than once for the same day."));
+    return next(
+      new ApiError(
+        400,
+        "You cannot mark attendance more than once for the same day."
+      )
+    );
   }
 
   if (exitsAttendance && exitsAttendance?.checkIn) {
@@ -225,10 +230,36 @@ const getAllUserAttendance = async (req, res) => {
 const getMyMonthAttendanceById = async (req, res, next) => {
   let { userid, month } = req.query;
   month = month.slice(0, 3);
+  userid = new mongoose.Types.ObjectId(userid);
+  const monthAttendance = await Attendance.aggregate([
+    {
+      $match: {
+        $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
+      },
+    },
+    {
+      $lookup:{
+        from:"users",
+        localField:"user",
+        foreignField:"_id",
+        as:"user"
+      }
+    }
+  ,{
+    $addFields:{
+      user:{$arrayElemAt:["$user",0]}
+    }
+  },
+  {
+    $project:{
+      checkIn:"$checkIn.time",
+      checkOut:"$checkIn.time",
+      date:"$date",
+      user:{username:"$user.fullName",email:"$user.email",_id:"$user._id",role:"$user.id"}
+    }
+  }
+  ]);
 
-  const monthAttendance = await Attendance.find({
-    $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
-  }).select("-user");
   if (monthAttendance && monthAttendance.length == 0) {
     return next(new ApiError(400, "No attendance record found"));
   }
@@ -239,7 +270,7 @@ const getMyMonthAttendanceById = async (req, res, next) => {
     monthAttendance,
   });
 };
-
+//this is for admin
 const countTodayAttendies = async (req, res, next) => {
   const date = new Date().toLocaleDateString();
 
@@ -263,42 +294,38 @@ const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
   if (req.user.role !== "2") {
     return next(new ApiError(400, "Sorry your are not Team Lead"));
   }
-const date=new Date().toDateString()
+  const date = new Date().toDateString();
 
   let attendanceRecord = await Attendance.aggregate([
-    { 
-      $match: { date } 
-    }
-    ,{
-      $lookup:{
-        from:"users",
-        localField:"user",
-        foreignField:"_id",
-        as:"user"
-      }
+    {
+      $match: { date },
     },
     {
-$addFields:{
-  user:{
-    $arrayElemAt:["$user",0]
-  }
-}
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
     },
-   
+    {
+      $addFields: {
+        user: {
+          $arrayElemAt: ["$user", 0],
+        },
+      },
+    },
   ]);
-  
-   attendanceRecord=attendanceRecord.filter(item=>{
 
-    if(item.user.createdBy.equals(req.user._id)){
-      return item
+  attendanceRecord = attendanceRecord.filter((item) => {
+    if (item.user.createdBy.equals(req.user._id)) {
+      return item;
     }
-
-  })
+  });
   res.status(200).json({
     success: true,
     message: "Successfully get my team members today attendance status",
-    attendanceRecord
-
+    attendanceRecord,
   });
 };
 
