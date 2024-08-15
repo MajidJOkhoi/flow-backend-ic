@@ -301,6 +301,24 @@ const myProfile = async (req, res,next) => {
   });
 };
 
+const getUserById=async(req,res,next)=>{
+  const {_id}=req.params
+  if(!_id){
+    return next(400,"User id is required")
+  }
+
+  const user=await User.findOne({_id:_id}).select("-password ")
+  if(!_id){
+    return next(400,"User Not Found with this Id")
+  }
+
+  res.status(200).json({
+    user,
+    message: "Successfully get user by id ",
+    success: true,
+  });
+}
+
 const updateUserRecord = async (req, res,next) => {
   const { birthDate, designation, skill, branchName, phoneNo, address } =
     req.body;
@@ -460,5 +478,6 @@ export {
   createAdmin,
   getMyAllUsers,
   deleteUser,
-  getTeamHeadDetails
+  getTeamHeadDetails,
+  getUserById
 };

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create, createAdmin, deleteUser, getMyAllUsers, getTeamHeadDetails, login, logout, myProfile, updatePicture, updateUserRecord } from "../controller/user.controller.js";
+import { create, createAdmin, deleteUser, getMyAllUsers, getTeamHeadDetails, getUserById, login, logout, myProfile, updatePicture, updateUserRecord } from "../controller/user.controller.js";
 import {upload} from "../middleware/multer.js"
 import {auth} from "../middleware/auth.js"
 import { admin } from "../middleware/admin.js";
@@ -16,6 +16,7 @@ import { admin } from "../middleware/admin.js";
  userRoute.route("/updateUserRecord").put(auth,updateUserRecord)
  userRoute.route("/getMyAllUsers").get(auth,getMyAllUsers)
  userRoute.route("/getAllTeamHeads").get(getTeamHeadDetails)
+ userRoute.route("/getUserById/:_id").get(getUserById)
 
 
 export default userRoute

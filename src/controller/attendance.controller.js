@@ -237,25 +237,13 @@ const getMyMonthAttendanceById = async (req, res, next) => {
         $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
       },
     },
-    {
-      $lookup:{
-        from:"users",
-        localField:"user",
-        foreignField:"_id",
-        as:"user"
-      }
-    }
-  ,{
-    $addFields:{
-      user:{$arrayElemAt:["$user",0]}
-    }
-  },
+    
   {
     $project:{
       checkIn:"$checkIn.time",
-      checkOut:"$checkIn.time",
+      checkOut:"$checkOut.time",
       date:"$date",
-      user:{username:"$user.fullName",email:"$user.email",_id:"$user._id",role:"$user.id"}
+
     }
   }
   ]);
