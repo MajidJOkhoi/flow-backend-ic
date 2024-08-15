@@ -317,11 +317,16 @@ const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
     },
   ]);
 
+
   attendanceRecord = attendanceRecord.filter((item) => {
-    if (item.user.createdBy.equals(req.user._id)) {
+
+
+    if (item.user.createdBy.toString()===req.user._id.toString()) {
+     
       return item;
     }
   });
+  
   res.status(200).json({
     success: true,
     message: "Successfully get my team members today attendance status",
