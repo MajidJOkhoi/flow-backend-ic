@@ -350,7 +350,7 @@ const myWorkingHours=async(req,res)=>{
     }
   ])
 
-  workingHours=workingHours[0].minutes+(workingHours[0].hours*60)
+  workingHours=(workingHours[0].minutes/60)+(workingHours[0].hours)
   res.status(200).json({
     success: true,
     message: "Successfully get my working hours",
