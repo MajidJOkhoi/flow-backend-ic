@@ -243,7 +243,7 @@ const getMyMonthAttendanceById = async (req, res, next) => {
       checkIn:"$checkIn.time",
       checkOut:"$checkOut.time",
       date:"$date",
-
+     duration:1
     }
   }
   ]);
@@ -322,6 +322,41 @@ const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
   });
 };
 
+const myWorkingHours=async(req,res)=>{
+  let {month}=req.params
+  month=month.slice(0,3)
+  let workingHours=await Attendance.aggregate([
+    {
+      $match:{
+        $and: [{ date: { $regex: month, $options: "i" } }, { user: req.user._id }],
+      }
+    },
+    {
+      $group:{
+        _id:"$user",
+        minutes:{
+          $sum:"$duration.minutes"
+        },
+        hours:{
+          $sum:"$duration.hours"
+        }
+      }
+    },
+    {
+      $project:{
+        minutes:1,
+        hours:1
+      }
+    }
+  ])
+
+  workingHours=workingHours[0].minutes+(workingHours[0].hours*60)
+  res.status(200).json({
+    success: true,
+    message: "Successfully get my working hours",
+    workingHours
+  });
+}
 export {
   checkIn,
   checkOut,
@@ -332,4 +367,5 @@ export {
   getMyMonthAttendanceById,
   countTodayAttendies,
   getMyTeamMemberTodayAttendanceRecord,
+  myWorkingHours
 };
