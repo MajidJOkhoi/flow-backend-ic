@@ -279,9 +279,7 @@ const countTodayAttendies = async (req, res, next) => {
 };
 
 const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
-  if (req.user.role !== "2") {
-    return next(new ApiError(400, "Sorry your are not Team Lead"));
-  }
+
   const date = new Date().toDateString();
 
   let attendanceRecord = await Attendance.aggregate([
@@ -305,15 +303,15 @@ const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
     },
   ]);
 
-
-  attendanceRecord = attendanceRecord.filter((item) => {
-
-
-    if (item.user.createdBy.toString()===req.user._id.toString()) {
-     
-      return item;
-    }
-  });
+  if (req.user.role == "2") {
+    attendanceRecord = attendanceRecord.filter((item) => {
+      if (item.user.createdBy.toString()===req.user._id.toString()) {
+        return item;
+      }
+  
+    });
+  }
+ 
   
   res.status(200).json({
     success: true,
