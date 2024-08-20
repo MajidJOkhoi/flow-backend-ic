@@ -1,6 +1,7 @@
 import { ApiError } from "../utlis/ApiError.js";
 import { Attendance } from "../model/attendance.model.js";
 import mongoose from "mongoose";
+import { User } from "../model/user.model.js";
 
 function parseTimeString(timeString) {
   const [time, modifier] = timeString.split(" ");
@@ -281,8 +282,8 @@ const countTodayAttendies = async (req, res, next) => {
 const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
 
   const date = new Date().toDateString();
-
-  let attendanceRecord = await Attendance.aggregate([
+  let totalUser;
+  let onlineUserAttendanceRecord = await Attendance.aggregate([
     {
       $match: { date },
     },
@@ -303,20 +304,37 @@ const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
     },
   ]);
 
-  if (req.user.role == "2") {
-    attendanceRecord = attendanceRecord.filter((item) => {
-      if (item.user.createdBy.toString()===req.user._id.toString()) {
+
+totalUser=(await User.find({status:false})).length
+
+
+//check that if user is Team lead then show him only his team member attendance which are currently checkIn
+if (req.user.role == "2") {
+  totalUser=await (await User.find({createdBy:req.user._id,status:false})).length
+    onlineUserAttendanceRecord = onlineUserAttendanceRecord.filter((item) => {
+
+      if (item.user.createdBy.toString()===req.user._id.toString() && item.checkOut ==undefined) {
         return item;
       }
   
     });
   }
  
-  
+  //this filter is for admin to see user which are currently checkIn
+onlineUserAttendanceRecord = onlineUserAttendanceRecord.filter((item) => {
+
+  if (item.checkOut ==undefined) {
+    return item;
+  }
+
+});
+
+
   res.status(200).json({
     success: true,
     message: "Successfully get my team members today attendance status",
-    attendanceRecord,
+    onlineUserAttendanceRecord,
+    totalUser
   });
 };
 
