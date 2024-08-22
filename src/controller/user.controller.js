@@ -333,14 +333,14 @@ const updateUserRecord = async (req, res,next) => {
     return next(ApiError(400, "user does not exits  "))
   }
 
-  user.fullName = user.fullName || fullName;
-  user.designation = user.designation|| designation;
-  user.contact = user.contact|| contact;
-  user.email = user.email|| email;
-  user.password = user.password||password;
-  user.address = user.address  || address;
-  user.role = user.role  || role;
-  user.jobType = user.jobType  || jobType;
+  user.fullName =   fullName || user.fullName;
+  user.designation =  designation || user.designation;
+  user.contact = contact ||user.contact;
+  user.email = email||user.email;
+  user.password = password || user.password;
+  user.address = address|| user.address  ;
+  user.role = role || user.role  ;
+  user.jobType = jobType || user.jobType ;
 
   await user.save();
 
