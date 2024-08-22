@@ -320,33 +320,36 @@ const getUserById=async(req,res,next)=>{
 }
 
 const updateUserRecord = async (req, res,next) => {
-  const { birthDate, designation, skill, branchName, phoneNo, address } =
-    req.body;
-  const _id = req?.user._id;
+  const { fullName, contact, email, password, address, role,designation,jobType } =req.body;
+  const {id} = req.params;
 
-  if (!_id) {
-    return next(ApiError(400, "unauthorized action , Login First"))
+  if (!id) {
+    return next(ApiError(400, "userid is required "))
   }
 
-  const user = await User.findOne({ _id });
+  const user = await User.findOne({ _id:id});
+
   if (!user) {
     return next(ApiError(400, "user does not exits  "))
   }
 
-  user.birthDate = birthDate;
-  user.designation = designation;
-  user.skill = skill;
-  user.branchName = branchName;
-  user.phoneNo = phoneNo;
-  user.address = address;
+  user.fullName = user.fullName || fullName;
+  user.designation = user.designation|| designation;
+  user.contact = user.contact|| contact;
+  user.email = user.email|| email;
+  user.password = user.password||password;
+  user.address = user.address  || address;
+  user.role = user.role  || role;
+  user.jobType = user.jobType  || jobType;
 
   await user.save();
 
   const updatedUser = await User.findOne({ _id: user._id });
+  
   res.status(200).json({
-    user: updatedUser,
     message: "Sucessfully User Record Updated.... ",
     success: true,
+    updatedUser
   });
 };
 

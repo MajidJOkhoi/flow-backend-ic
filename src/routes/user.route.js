@@ -13,7 +13,7 @@ import { admin } from "../middleware/admin.js";
  userRoute.route("/delete/:userId").put(admin,deleteUser)
  userRoute.route("/updatePicture").put(auth,upload.single("profileImage"),updatePicture)
  userRoute.route("/myProfile").get(auth,myProfile)
- userRoute.route("/updateUserRecord").put(auth,updateUserRecord)
+ userRoute.route("/updateUserRecord/:id").put(updateUserRecord)
  userRoute.route("/getMyAllUsers").get(auth,getMyAllUsers)
  userRoute.route("/getAllTeamHeads").get(getTeamHeadDetails)
  userRoute.route("/getUserById/:_id").get(getUserById)
