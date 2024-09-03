@@ -410,9 +410,20 @@ const createAdmin = async (req, res,next) => {
 };
 
 const getMyAllUsers = async (req, res,next) => {
-  const myUsers = await User.find({ companyId: req.user.companyId ,status:false});
+  let myUsers = await User.find({ companyId: req.user.companyId ,status:false});
+
   if (!myUsers) {
     return next( ApiError(400, "error occur while getting all users your company"))
+  }
+
+const userId=req.user._id.toString()
+let createdBy;
+  if(req.user.role=="2"){  
+    myUsers=myUsers.filter(user=>{
+    createdBy =user.createdBy
+   return userId===createdBy.toString()
+    })
+    
   }
 
   res.status(200).json({
