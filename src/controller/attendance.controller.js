@@ -391,6 +391,42 @@ absentUsers=absentUsers.filter(user=>_id==user?.createdBy?.toString())
     absentUsers,count:absentUsers.length,
   });
 };
+
+const getTodayPresentUsers=async (req,res,next)=>{
+  const _id=req.user._id.toString()
+  const date = new Date().toDateString();
+  let presentUsers = await Attendance.aggregate([
+    {
+      $match: { $and:[{date},{checkOut:{$exists:true}}] },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $addFields: {
+        user: {
+          $arrayElemAt: ["$user", 0],
+        },
+      },
+    },    
+  {
+    $project:{
+      checkIn:"$checkIn.time",
+      checkOut:"$checkOut.time",
+     duration:1,
+     fullName:"$user.fullName"
+    }
+  }
+  ]);
+res.status(200).json({
+  status:true,message:"get All present users",presentUsers
+})
+}
 export {
   checkIn,
   checkOut,
@@ -402,5 +438,6 @@ export {
   countTodayAttendies,
   getMyTeamMemberTodayAttendanceRecord,
   myWorkingHours,
-  getTodayAbsentUsers
+  getTodayAbsentUsers,
+  getTodayPresentUsers
 };

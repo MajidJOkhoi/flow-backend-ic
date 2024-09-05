@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers } from "../controller/attendance.controller.js";
+import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers } from "../controller/attendance.controller.js";
 import { auth } from "../middleware/auth.js";
 import {admin} from "../middleware/admin.js"
 
@@ -19,7 +19,8 @@ attendanceRoute.route("/getMyMonthAttendanceById").get(getMyMonthAttendanceById)
 attendanceRoute.route("/getTodayAttendiesCount").get(admin,countTodayAttendies)
 attendanceRoute.route("/getMyTeamMemberAttendanceStatus").get(auth,getMyTeamMemberTodayAttendanceRecord)
 attendanceRoute.route("/myWorkingHours/:month").get(auth,myWorkingHours)
-attendanceRoute.route("/getAllTodayAbsentUser").get(auth,getTodayAbsentUsers)
+attendanceRoute.route("/getAllTodayAbsentUsers").get(auth,getTodayAbsentUsers)
+attendanceRoute.route("/getAllTodayPresentUsers").get(auth,getTodayPresentUsers)
 
 
 export { attendanceRoute}
