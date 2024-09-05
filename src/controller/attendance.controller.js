@@ -373,6 +373,24 @@ const myWorkingHours=async(req,res)=>{
     workingMinutes
   });
 }
+
+
+const getTodayAbsentUsers = async (req, res,next) => {
+  const _id=req.user._id.toString()
+  const todayDate=new Date().toDateString()
+  const  attendedUsers = await Attendance.find({ date: todayDate }).distinct('user');
+  let absentUsers=await User.find({_id:{$nin:attendedUsers}}).select("-password")
+
+  if(req.user.role=="2"){
+absentUsers=absentUsers.filter(user=>_id==user?.createdBy?.toString())
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "successfully get all Absent Users ",
+    absentUsers,count:absentUsers.length,
+  });
+};
 export {
   checkIn,
   checkOut,
@@ -383,5 +401,6 @@ export {
   getMyMonthAttendanceById,
   countTodayAttendies,
   getMyTeamMemberTodayAttendanceRecord,
-  myWorkingHours
+  myWorkingHours,
+  getTodayAbsentUsers
 };

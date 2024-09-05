@@ -17,6 +17,7 @@ import { admin } from "../middleware/admin.js";
  userRoute.route("/getMyAllUsers").get(auth,getMyAllUsers)
  userRoute.route("/getAllTeamHeads").get(getTeamHeadDetails)
  userRoute.route("/getUserById/:_id").get(getUserById)
+ 
 
 
 export default userRoute
