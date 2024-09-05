@@ -379,8 +379,40 @@ const getTodayAbsentUsers = async (req, res,next) => {
   const _id=req.user._id.toString()
   const todayDate=new Date().toDateString()
   const  attendedUsers = await Attendance.find({ date: todayDate }).distinct('user');
-  let absentUsers=await User.find({_id:{$nin:attendedUsers}}).select("-password")
-
+  let absentUsers=await User.aggregate([
+    {
+      $match:{_id:{$nin:attendedUsers}}
+    },
+    {
+      $lookup:{
+        from:"jobtypes",
+        localField:"jobType",
+        foreignField:"id",
+        as:"jobtype"
+      }
+    },
+    {
+      $lookup:{
+        from:"designations",
+        localField:"designation",
+        foreignField:"id",
+        as:"designation"
+      }
+    },
+    {
+      $addFields:{designation:{$arrayElemAt:["$designation",0]}}
+    },
+    {
+      $addFields:{jobtype:{$arrayElemAt:["$jobtype",0]}}
+    },
+    {
+      $project:{
+        designation:"$designation.name",
+        jobType:"$jobtype.name",
+        fullName:1,
+      }
+    }
+  ])
   if(req.user.role=="2"){
 absentUsers=absentUsers.filter(user=>_id==user?.createdBy?.toString())
   }
