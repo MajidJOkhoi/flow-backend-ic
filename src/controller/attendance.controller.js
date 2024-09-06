@@ -65,7 +65,6 @@ const checkIn = async (req, res, next) => {
 
   const attendance = await Attendance.create({
     checkIn,
-    checkOut: {},
     user: req.user._id,
     date,
   });
@@ -238,15 +237,15 @@ const getMyMonthAttendanceById = async (req, res, next) => {
         $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
       },
     },
-    
-  {
-    $project:{
-      checkIn:"$checkIn.time",
-      checkOut:"$checkOut.time",
-      date:"$date",
-     duration:1
-    }
-  }
+
+    {
+      $project: {
+        checkIn: "$checkIn.time",
+        checkOut: "$checkOut.time",
+        date: "$date",
+        duration: 1,
+      },
+    },
   ]);
 
   if (monthAttendance && monthAttendance.length == 0) {
@@ -280,7 +279,6 @@ const countTodayAttendies = async (req, res, next) => {
 };
 
 const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
-
   const date = new Date().toDateString();
   let totalUser;
   let onlineUserAttendanceRecord = await Attendance.aggregate([
@@ -304,132 +302,140 @@ const getMyTeamMemberTodayAttendanceRecord = async (req, res, next) => {
     },
   ]);
 
+  totalUser = (await User.find({ status: false })).length;
 
-totalUser=(await User.find({status:false})).length
-
-
-//check that if user is Team lead then show him only his team member attendance which are currently checkIn
-if (req.user.role == "2") {
-  totalUser=await (await User.find({createdBy:req.user._id,status:false})).length
+  //check that if user is Team lead then show him only his team member attendance which are currently checkIn
+  if (req.user.role == "2") {
+    totalUser = await (
+      await User.find({ createdBy: req.user._id, status: false })
+    ).length;
     onlineUserAttendanceRecord = onlineUserAttendanceRecord.filter((item) => {
-
-      if (item.user.createdBy.toString()===req.user._id.toString() && item.checkOut ==undefined) {
+      if (
+        item.user.createdBy.toString() === req.user._id.toString() &&
+        item.checkOut == undefined
+      ) {
         return item;
       }
-  
     });
   }
- 
+
   //this filter is for admin to see user which are currently checkIn
-onlineUserAttendanceRecord = onlineUserAttendanceRecord.filter((item) => {
-
-  if (item.checkOut ==undefined) {
-    return item;
-  }
-
-});
-
+  onlineUserAttendanceRecord = onlineUserAttendanceRecord.filter((item) => {
+    if (item.checkOut == undefined) {
+      return item;
+    }
+  });
 
   res.status(200).json({
     success: true,
     message: "Successfully get my team members today attendance status",
     onlineUserAttendanceRecord,
-    totalUser
+    totalUser,
   });
 };
 
-const myWorkingHours=async(req,res)=>{
-  let {month}=req.params
-  month=month.slice(0,3)
-  let workingHours=await Attendance.aggregate([
+const myWorkingHours = async (req, res) => {
+  let { month } = req.params;
+  month = month.slice(0, 3);
+  let workingHours = await Attendance.aggregate([
     {
-      $match:{
-        $and: [{ date: { $regex: month, $options: "i" } }, { user: req.user._id }],
-      }
+      $match: {
+        $and: [
+          { date: { $regex: month, $options: "i" } },
+          { user: req.user._id },
+        ],
+      },
     },
     {
-      $group:{
-        _id:"$user",
-        minutes:{
-          $sum:"$duration.minutes"
+      $group: {
+        _id: "$user",
+        minutes: {
+          $sum: "$duration.minutes",
         },
-        hours:{
-          $sum:"$duration.hours"
-        }
-      }
+        hours: {
+          $sum: "$duration.hours",
+        },
+      },
     },
     {
-      $project:{
-        minutes:1,
-        hours:1
-      }
-    }
-  ])
+      $project: {
+        minutes: 1,
+        hours: 1,
+      },
+    },
+  ]);
 
-  const workingMinutes=(workingHours[0]?.minutes)+(workingHours[0]?.hours*60)
+  const workingMinutes = workingHours[0]?.minutes + workingHours[0]?.hours * 60;
   res.status(200).json({
     success: true,
     message: "Successfully get my working hours",
-    workingMinutes
+    workingMinutes,
   });
-}
+};
 
+const getTodayAbsentUsers = async (req, res, next) => {
+  const _id = req.user._id.toString();
+  const todayDate = new Date().toDateString();
+  const attendedUsers = await Attendance.find({ date: todayDate }).distinct(
+    "user"
+  );
 
-const getTodayAbsentUsers = async (req, res,next) => {
-  const _id=req.user._id.toString()
-  const todayDate=new Date().toDateString()
-  const  attendedUsers = await Attendance.find({ date: todayDate }).distinct('user');
-  let absentUsers=await User.aggregate([
+  let absentUsers = await User.aggregate([
     {
-      $match:{_id:{$nin:attendedUsers}}
+      $match: { _id: { $nin: attendedUsers } },
     },
     {
-      $lookup:{
-        from:"jobtypes",
-        localField:"jobType",
-        foreignField:"id",
-        as:"jobtype"
-      }
+      $lookup: {
+        from: "jobtypes",
+        localField: "jobType",
+        foreignField: "id",
+        as: "jobtype",
+      },
     },
     {
-      $lookup:{
-        from:"designations",
-        localField:"designation",
-        foreignField:"id",
-        as:"designation"
-      }
+      $lookup: {
+        from: "designations",
+        localField: "designation",
+        foreignField: "id",
+        as: "designation",
+      },
     },
     {
-      $addFields:{designation:{$arrayElemAt:["$designation",0]}}
+      $addFields: { designation: { $arrayElemAt: ["$designation", 0] } },
     },
     {
-      $addFields:{jobtype:{$arrayElemAt:["$jobtype",0]}}
+      $addFields: { jobtype: { $arrayElemAt: ["$jobtype", 0] } },
     },
     {
-      $project:{
-        designation:"$designation.name",
-        jobType:"$jobtype.name",
-        fullName:1,
-      }
-    }
-  ])
-  if(req.user.role=="2"){
-absentUsers=absentUsers.filter(user=>_id==user?.createdBy?.toString())
+      $project: {
+        designation: "$designation.name",
+        jobType: "$jobtype.name",
+        fullName: 1,
+        createdBy:1
+      },
+    },
+  ]);
+  absentUsers = absentUsers.filter((user) => _id != user._id);
+  if (req.user.role == "2") {
+   
+    absentUsers = absentUsers.filter((user) => _id == user?.createdBy?.toString());
+   
   }
 
   res.status(200).json({
     success: true,
     message: "successfully get all Absent Users ",
-    absentUsers,count:absentUsers.length,
+    absentUsers,
+    count: absentUsers.length,
   });
 };
 
-const getTodayPresentUsers=async (req,res,next)=>{
-  const _id=req.user._id.toString()
+const getTodayPresentUsers = async (req, res, next) => {
+  const _id = req.user._id.toString();
   const date = new Date().toDateString();
   let presentUsers = await Attendance.aggregate([
     {
-      $match: { $and:[{date},{checkOut:{$exists:true}}] },
+      $match: { $and: [{ date }, { checkOut: { $exists: true } }] },
     },
     {
       $lookup: {
@@ -445,20 +451,31 @@ const getTodayPresentUsers=async (req,res,next)=>{
           $arrayElemAt: ["$user", 0],
         },
       },
-    },    
-  {
-    $project:{
-      checkIn:"$checkIn.time",
-      checkOut:"$checkOut.time",
-     duration:1,
-     fullName:"$user.fullName"
-    }
-  }
+    },
+    {
+      $project: {
+        checkIn: "$checkIn.time",
+        checkOut: "$checkOut.time",
+        duration: 1,
+        fullName: "$user.fullName",
+        date: 1,
+        teamHeadId:"$user.createdBy"
+      },
+    },
   ]);
-res.status(200).json({
-  status:true,message:"get All present users",presentUsers
-})
-}
+  presentUsers.filter((user) => _id != user._id.toString());
+  if (req.user.role == "2") {
+    
+    presentUsers = presentUsers.filter((user) => _id == user?.teamHeadId.toString());
+   
+  }
+  res.status(200).json({
+    status: true,
+    message: "get All present users",
+    presentUsers,
+    count:presentUsers.length
+  });
+};
 export {
   checkIn,
   checkOut,
@@ -471,5 +488,5 @@ export {
   getMyTeamMemberTodayAttendanceRecord,
   myWorkingHours,
   getTodayAbsentUsers,
-  getTodayPresentUsers
+  getTodayPresentUsers,
 };
