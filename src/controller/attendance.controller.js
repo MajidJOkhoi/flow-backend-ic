@@ -477,6 +477,16 @@ const getTodayPresentUsers = async (req, res, next) => {
     count:presentUsers.length
   });
 };
+
+const deleteAttendance=async (req,res)=>{
+ const attendanceId=req.params.id
+  await Attendance.deleteOne({_id:attendanceId})
+
+  res.status(200).json({
+    success:true,message:"Attendance Deleted"
+  })
+}
+
 export {
   checkIn,
   checkOut,
@@ -490,4 +500,5 @@ export {
   myWorkingHours,
   getTodayAbsentUsers,
   getTodayPresentUsers,
+  deleteAttendance
 };
