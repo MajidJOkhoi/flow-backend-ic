@@ -143,7 +143,7 @@ const getTodayAttendance = async (req, res, next) => {
   });
 
   if (!attendance) {
-    return next(new ApiError(400, "Please Make Attendance First"));
+    return next(new ApiError(400, "No attendance found for today."));
   }
 
   res.json({
