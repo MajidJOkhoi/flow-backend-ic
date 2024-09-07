@@ -138,11 +138,11 @@ const getTodayAttendance = async (req, res, next) => {
     return next(new ApiError(400, "unauthorized action , Login First"));
   }
 
-  const attendance = await Attendance.findOne({
-    $and: [{ date }, { user: req.user._id }],
-  });
+  const attendance = await Attendance.aggregate([{
+    $match:{ $and: [{ date }, { user: req.user._id }]}
+  }])
 
-  if (!attendance) {
+  if (attendance.length ==0) {
     return next(new ApiError(400, "No attendance found for today."));
   }
 
