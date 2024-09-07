@@ -11,7 +11,7 @@ import {admin} from "../middleware/admin.js"
 
  attendanceRoute.route("/checkIn").post(auth,checkIn)
  attendanceRoute.route("/checkOut").post(auth,checkOut)
-attendanceRoute.route("/getTodayAttendance").get(auth,getTodayAttendance)
+attendanceRoute.route("/getTodayAttendance/:date").get(auth,getTodayAttendance)
 attendanceRoute.route("/getMyAllAttendances").get(auth,getMyAllAttendance)
 attendanceRoute.route("/getMyMonthAttendance/:month").get(auth,getMyMonthAttendance)
 attendanceRoute.route("/getUsersAttendance").get(admin,getAllUserAttendance)

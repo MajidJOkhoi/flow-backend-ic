@@ -132,8 +132,8 @@ const checkOut = async (req, res, next) => {
 
 const getTodayAttendance = async (req, res, next) => {
   const _id = req?.user._id;
-  const date = new Date().toDateString();
-
+  const date =req.params.date;
+  
   if (!_id) {
     return next(new ApiError(400, "unauthorized action , Login First"));
   }
