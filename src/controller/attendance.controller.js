@@ -66,7 +66,6 @@ const checkIn = async (req, res, next) => {
   const attendance = await Attendance.create({
     checkIn,
     user: req.user._id,
-    checkOut:{},
     date,
   });
 

@@ -7,8 +7,7 @@ const attendanceSchma=new mongoose.Schema({
         required:true
      },
      checkOut:{
-        type:Object,
-        required:true
+        type:Object
      },
      user:{
         type:mongoose.Schema.Types.ObjectId,
