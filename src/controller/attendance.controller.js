@@ -43,7 +43,7 @@ const checkLocation = async (longitude, latitude) => {
     { latitude: 26.231802, longitude: 68.388709 }, // Point 3
     { latitude: 26.231836, longitude: 68.388696 }, // Point 4
   ];
-  const isInside = geolib.isPointInPolygon(area, userLocation);
+  const isInside = geolib.isPointInPolygon(userLocation,area );
   return isInside;
 };
 
