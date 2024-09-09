@@ -2,6 +2,7 @@ import { ApiError } from "../utlis/ApiError.js";
 import { Attendance } from "../model/attendance.model.js";
 import mongoose from "mongoose";
 import { User } from "../model/user.model.js";
+import geolib from "geolib"
 
 function parseTimeString(timeString) {
   const [time, modifier] = timeString.split(" ");
@@ -33,12 +34,29 @@ function getDuration(startTime, endTime) {
   return { hours, minutes, seconds };
 }
 
+const checkLocation=async(longitude,latitude)=>{
+
+  const userLocation = { latitude, longitude};
+
+  const area = [
+    { latitude: 26.231827, longitude: 68.388631 }, // Point 1
+    { latitude: 26.231729, longitude: 68.388665 }, // Point 2
+    { latitude: 26.231780, longitude: 68.388360 }, // Point 3
+    { latitude: 26.231873, longitude: 68.388807 }, // Point 4
+];
+const isInside = geolib.isPointInPolygon(userLocation, area);
+
+  return isInside
+}
+
 const checkIn = async (req, res, next) => {
   const { checkIn, date } = req.body;
 
   if (!checkIn) {
     return next(new ApiError(402, "could not detect the location..."));
   }
+
+  
 
   const exitsAttendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
@@ -61,6 +79,12 @@ const checkIn = async (req, res, next) => {
     return next(
       new ApiError(400, "You cannot check in more than once per day.")
     );
+  }
+
+  const locationStatus=checkLocation(checkIn.longitude,checkIn.latitude)
+
+  if (!locationStatus) {
+    return next(new ApiError(402, "You are outside the office"));
   }
 
   const attendance = await Attendance.create({
@@ -87,6 +111,7 @@ const checkOut = async (req, res, next) => {
     return next(new ApiError(402, "could not detect the location...."));
   }
 
+
   const attendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
   });
@@ -95,6 +120,7 @@ const checkOut = async (req, res, next) => {
     return next(new ApiError(400, "You cannot check out before checking in."));
   }
 
+
   if (attendance && attendance?.checkIn && attendance?.checkOut) {
     return next(
       new ApiError(
@@ -102,6 +128,12 @@ const checkOut = async (req, res, next) => {
         "You cannot mark attendance more than once for the same day."
       )
     );
+  }
+
+  const locationStatus=checkLocation(checkOut.longitude,checkOut.latitude)
+
+  if (!locationStatus) {
+    return next(new ApiError(400, "You are outside the office"));
   }
 
   const duration = getDuration(
