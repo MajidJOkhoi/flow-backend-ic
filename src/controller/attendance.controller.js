@@ -40,9 +40,9 @@ const checkLocation=async(longitude,latitude)=>{
 
   const area = [
     { latitude: 26.231826, longitude: 68.388634 }, // Point 1
-    { latitude: 26.231733, longitude: 68.388664 }, // Point 2
-    { latitude: 26.231779, longitude: 68.388829 }, // Point 3
-    { latitude: 26.231872, longitude: 68.388801 }, // Point 4
+    { latitude: 26.231735, longitude: 68.388669 }, // Point 2
+    { latitude: 26.231777, longitude: 68.388805 }, // Point 3
+    { latitude: 26.231865, longitude: 68.388776 }, // Point 4
 ];
 const isInside = geolib.isPointInPolygon(userLocation, area);
   return isInside
@@ -50,9 +50,9 @@ const isInside = geolib.isPointInPolygon(userLocation, area);
 
 const checkIn = async (req, res, next) => {
   const { checkIn, date } = req.body;
- console.log("checkIn Date",checkIn)
+ 
   if (!checkIn) {
-    return next(new ApiError(402, "could not detect the location..."));
+    return next(new ApiError(400, "could not detect the location..."));
   }
 
   
@@ -84,7 +84,7 @@ const checkIn = async (req, res, next) => {
 
 
   if (!locationStatus) {
-    return next(new ApiError(402, "You are outside the office"));
+    return next(new ApiError(400, "You are outside the office"));
   }
 
   const attendance = await Attendance.create({
