@@ -36,15 +36,15 @@ function getDuration(startTime, endTime) {
 
 const checkLocation = async (longitude, latitude) => {
   const userLocation = { latitude, longitude };
+  const centerPoint = { latitude: 26.231801, longitude: 68.388698 };
+const allowedRadius = 7.12;
+const distance = geolib.getDistance(centerPoint, userLocation);
+let status=false
+if (distance <= allowedRadius) {
+  status=true
+} 
 
-  const area = [
-    { latitude: 26.231827, longitude: 68.388634 }, // Point 1
-    { latitude: 26.231737, longitude: 68.388667 }, // Point 2
-    { latitude: 26.231783, longitude: 68.388834 }, // Point 3
-    { latitude: 26.231872, longitude: 68.388801 }, // Point 4
-  ];
-  const isInside = geolib.isPointInPolygon(userLocation, area);
-  return isInside;
+  return status;
 };
 
 const checkIn = async (req, res, next) => {
@@ -78,7 +78,7 @@ const checkIn = async (req, res, next) => {
   }
 
   let locationStatus = await checkLocation(checkIn.longitude, checkIn.latitude);
-  console.log(locationStatus);
+
   if (!locationStatus) {
     return next(new ApiError(400, "You are outside the office"));
   }
