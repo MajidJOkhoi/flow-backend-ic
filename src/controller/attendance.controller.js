@@ -38,12 +38,12 @@ const checkLocation = async (longitude, latitude) => {
   const userLocation = { latitude, longitude };
 
   const area = [
-    { latitude: 26.231817, longitude: 68.388650 }, // Point 1
-    { latitude: 26.231787, longitude: 68.388663 }, // Point 2
-    { latitude: 26.231802, longitude: 68.388709 }, // Point 3
-    { latitude: 26.231836, longitude: 68.388696 }, // Point 4
+    { latitude: 26.231827, longitude: 68.388634 }, // Point 1
+    { latitude: 26.231737, longitude: 68.388667 }, // Point 2
+    { latitude: 26.231783, longitude: 68.388834 }, // Point 3
+    { latitude: 26.231872, longitude: 68.388801 }, // Point 4
   ];
-  const isInside = geolib.isPointInPolygon(userLocation,area );
+  const isInside = geolib.isPointInPolygon(userLocation, area);
   return isInside;
 };
 
@@ -78,7 +78,7 @@ const checkIn = async (req, res, next) => {
   }
 
   let locationStatus = await checkLocation(checkIn.longitude, checkIn.latitude);
-
+  console.log(locationStatus);
   if (!locationStatus) {
     return next(new ApiError(400, "You are outside the office"));
   }
