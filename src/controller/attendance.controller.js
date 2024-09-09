@@ -39,10 +39,10 @@ const checkLocation=async(longitude,latitude)=>{
   const userLocation = { latitude, longitude};
 
   const area = [
-    { latitude: 26.231817, longitude: 68.388650 }, // Point 1
-    { latitude: 26.231787, longitude: 68.388663 }, // Point 2
-    { latitude: 26.231802, longitude: 68.388709 }, // Point 3
-    { latitude: 26.231836, longitude: 68.388696 }, // Point 4
+    { latitude: 26.231826, longitude: 68.388634 }, // Point 1
+    { latitude: 26.231733, longitude: 68.388664 }, // Point 2
+    { latitude: 26.231779, longitude: 68.388829 }, // Point 3
+    { latitude: 26.231872, longitude: 68.388801 }, // Point 4
 ];
 const isInside = geolib.isPointInPolygon(userLocation, area);
   return isInside
