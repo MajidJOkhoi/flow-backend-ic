@@ -2,7 +2,7 @@ import { ApiError } from "../utlis/ApiError.js";
 import { Attendance } from "../model/attendance.model.js";
 import mongoose from "mongoose";
 import { User } from "../model/user.model.js";
-import geolib from "geolib"
+import geolib from "geolib";
 
 function parseTimeString(timeString) {
   const [time, modifier] = timeString.split(" ");
@@ -34,28 +34,25 @@ function getDuration(startTime, endTime) {
   return { hours, minutes, seconds };
 }
 
-const checkLocation=async(longitude,latitude)=>{
-
-  const userLocation = { latitude, longitude};
+const checkLocation = async (longitude, latitude) => {
+  const userLocation = { latitude, longitude };
 
   const area = [
-    { latitude: 26.231826, longitude: 68.388634 }, // Point 1
-    { latitude: 26.231735, longitude: 68.388669 }, // Point 2
-    { latitude: 26.231777, longitude: 68.388805 }, // Point 3
-    { latitude: 26.231865, longitude: 68.388776 }, // Point 4
-];
-const isInside = geolib.isPointInPolygon(area,userLocation)
-  return isInside
-}
+    { latitude: 26.231829, longitude: 68.388632 }, // Point 1
+    { latitude: 26.231734, longitude: 68.388667 }, // Point 2
+    { latitude: 26.231771, longitude: 68.388792 }, // Point 3
+    { latitude: 26.231855, longitude: 68.388755 }, // Point 4
+  ];
+  const isInside = geolib.isPointInPolygon(area, userLocation);
+  return isInside;
+};
 
 const checkIn = async (req, res, next) => {
   const { checkIn, date } = req.body;
- 
+
   if (!checkIn) {
     return next(new ApiError(400, "could not detect the location..."));
   }
-
-  
 
   const exitsAttendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
@@ -80,8 +77,7 @@ const checkIn = async (req, res, next) => {
     );
   }
 
-  let locationStatus=await checkLocation(checkIn.longitude,checkIn.latitude)
-
+  let locationStatus = await checkLocation(checkIn.longitude, checkIn.latitude);
 
   if (!locationStatus) {
     return next(new ApiError(400, "You are outside the office"));
@@ -111,7 +107,6 @@ const checkOut = async (req, res, next) => {
     return next(new ApiError(402, "could not detect the location...."));
   }
 
-
   const attendance = await Attendance.findOne({
     $and: [{ date }, { user: req.user._id }],
   });
@@ -119,7 +114,6 @@ const checkOut = async (req, res, next) => {
   if (!attendance) {
     return next(new ApiError(400, "You cannot check out before checking in."));
   }
-
 
   if (attendance && attendance?.checkIn && attendance?.checkOut) {
     return next(
@@ -130,7 +124,10 @@ const checkOut = async (req, res, next) => {
     );
   }
 
-  const locationStatus=await checkLocation(checkOut.longitude,checkOut.latitude)
+  const locationStatus = await checkLocation(
+    checkOut.longitude,
+    checkOut.latitude
+  );
 
   if (!locationStatus) {
     return next(new ApiError(400, "You are outside the office"));
@@ -163,17 +160,19 @@ const checkOut = async (req, res, next) => {
 
 const getTodayAttendance = async (req, res, next) => {
   const _id = req?.user._id;
-  const date =req.params.date;
-  
+  const date = req.params.date;
+
   if (!_id) {
     return next(new ApiError(400, "unauthorized action , Login First"));
   }
 
-  const attendance = await Attendance.aggregate([{
-    $match:{ $and: [{ date }, { user: req.user._id }]}
-  }])
+  const attendance = await Attendance.aggregate([
+    {
+      $match: { $and: [{ date }, { user: req.user._id }] },
+    },
+  ]);
 
-  if (attendance.length ==0) {
+  if (attendance.length == 0) {
     return next(new ApiError(400, "No attendance found for today."));
   }
 
@@ -443,15 +442,15 @@ const getTodayAbsentUsers = async (req, res, next) => {
         designation: "$designation.name",
         jobType: "$jobtype.name",
         fullName: 1,
-        createdBy:1
+        createdBy: 1,
       },
     },
   ]);
   absentUsers = absentUsers.filter((user) => _id != user._id);
   if (req.user.role == "2") {
-   
-    absentUsers = absentUsers.filter((user) => _id == user?.createdBy?.toString());
-   
+    absentUsers = absentUsers.filter(
+      (user) => _id == user?.createdBy?.toString()
+    );
   }
 
   res.status(200).json({
@@ -491,32 +490,33 @@ const getTodayPresentUsers = async (req, res, next) => {
         duration: 1,
         fullName: "$user.fullName",
         date: 1,
-        teamHeadId:"$user.createdBy"
+        teamHeadId: "$user.createdBy",
       },
     },
   ]);
   presentUsers.filter((user) => _id != user._id.toString());
   if (req.user.role == "2") {
-    
-    presentUsers = presentUsers.filter((user) => _id == user?.teamHeadId.toString());
-   
+    presentUsers = presentUsers.filter(
+      (user) => _id == user?.teamHeadId.toString()
+    );
   }
   res.status(200).json({
     status: true,
     message: "get All present users",
     presentUsers,
-    count:presentUsers.length
+    count: presentUsers.length,
   });
 };
 
-const deleteAttendance=async (req,res)=>{
- const attendanceId=req.params.id
-  await Attendance.deleteOne({_id:attendanceId})
+const deleteAttendance = async (req, res) => {
+  const attendanceId = req.params.id;
+  await Attendance.deleteOne({ _id: attendanceId });
 
   res.status(200).json({
-    success:true,message:"Attendance Deleted"
-  })
-}
+    success: true,
+    message: "Attendance Deleted",
+  });
+};
 
 export {
   checkIn,
@@ -531,5 +531,5 @@ export {
   myWorkingHours,
   getTodayAbsentUsers,
   getTodayPresentUsers,
-  deleteAttendance
+  deleteAttendance,
 };
