@@ -42,7 +42,8 @@ app.use("/api/project",projectRouter)
 import { leaveRouter } from "./routes/leave.route.js"
 app.use("/api/leave",leaveRouter)
 
-
+import { commentRoute } from "./routes/comment.route.js"
+app.use("/api/comment",commentRoute)
 app.get("/",(req,res)=>{
     res.json({
         success:true
