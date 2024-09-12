@@ -231,7 +231,7 @@ const updatePicture = async (req, res) => {
     return next( ApiError(400, "user does not exits  "))
   }
 
-  user.profilePicture = cloudPathImage?.url || user.profilePicture;
+  user.picture = cloudPathImage?.url || user.picture;
 
   await user.save();
 
