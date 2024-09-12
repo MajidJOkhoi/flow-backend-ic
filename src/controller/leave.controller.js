@@ -1,19 +1,24 @@
 import { Leave } from "../model/leave.model.js";
 import { ApiError } from "../utlis/ApiError.js";
+import { cloudinaryUpload } from "../utlis/cloudinary.js";
 import { sendMail } from "../utlis/sendMail.js";
 
 const applyLeave = async (req, res, next) => {
   try {
     const { description, teamHead, intialDate, endDate, totalDays } = req.body;
-
+    const filePath=req.file?.path
+   let cloudImagePath;
     if (
-      [description, teamHead, intialDate, endDate].some(
+      [description, teamHead].some(
         (item) => item.trim() == ""
       )
     ) {
       return next(new ApiError(400, "All fields are require"));
     }
-
+ 
+    if(filePath){
+      cloudImagePath=await cloudinaryUpload(filePath)
+    }
     const leave = await Leave.create({
       description,
       teamHead,
@@ -21,6 +26,7 @@ const applyLeave = async (req, res, next) => {
       intialDate,
       endDate,
       totalDays,
+      image:cloudImagePath?.url || ""
     });
 
     if (!leave) {

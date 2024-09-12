@@ -27,8 +27,11 @@ const leaveSchema=new mongoose.Schema({
         type:Number,
         required:true
     },
-    status:{
+    image:{
         type:String,
+    },
+    status:{
+        type:Boolean,
         required:true,
         default:false
     }
