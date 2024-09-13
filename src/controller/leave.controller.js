@@ -5,19 +5,23 @@ import { sendMail } from "../utlis/sendMail.js";
 
 const applyLeave = async (req, res, next) => {
   try {
-    const { description, teamHead, intialDate, endDate, totalDays } = req.body;
-    const filePath=req.file?.path
-   let cloudImagePath;
-    if (
-      [description, teamHead].some(
-        (item) => item.trim() == ""
-      )
-    ) {
+    const {
+      description,
+      teamHead,
+      intialDate,
+      endDate,
+      totalDays,
+      teamLeadEmail,
+      teamLeadName
+    } = req.body;
+    const filePath = req.file?.path;
+    let cloudImagePath;
+    if ([description, teamHead].some((item) => item.trim() == "")) {
       return next(new ApiError(400, "All fields are require"));
     }
- 
-    if(filePath){
-      cloudImagePath=await cloudinaryUpload(filePath)
+
+    if (filePath) {
+      cloudImagePath = await cloudinaryUpload(filePath);
     }
     const leave = await Leave.create({
       description,
@@ -26,17 +30,56 @@ const applyLeave = async (req, res, next) => {
       intialDate,
       endDate,
       totalDays,
-      image:cloudImagePath?.url || ""
+      image: cloudImagePath?.url || "",
     });
 
     if (!leave) {
       return next(new ApiError(400, "Error occur while apply for leave"));
     }
     const subject = "Request for leave";
-    const html = `<p> Hello Sir Iam ${req.user.fullName} I need Leave Reason : ${description} if you grant me Leave <br> Kindly Grant me ${totalDays} Days Leave  <br> Your Faithfully <br> ${req.user.fullName}</p>`;
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave Request</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
+  </style>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Leave Request</h1>
+    <p class="text-gray-700 mb-4">Dear <strong>${teamLeadName}</strong>,</p>
+
+    <p class="text-gray-700 mb-4">
+      I am writing to formally request leave from <strong>${intialDate}</strong> to <strong>${endDate}</strong>. 
+      The reason for my leave is <strong>${description}</strong>.
+    </p>
+
+    <p class="text-gray-700 mb-4">
+      My total leave duration is <strong>${totalDays}</strong> days.
+    </p>
+
+   
+
+    <p class="text-gray-700 mb-4">
+      I have ensured all my tasks are handled in my absence, and will be available for any urgent issues.
+    </p>
+
+    <p class="text-gray-700 mb-4">I would appreciate your approval for this leave.</p>
+
+    <p class="text-gray-700 mb-4">Thank you for your support.</p>
+
+    <p class="text-gray-700">Sincerely,</p>
+    <p class="text-gray-700"><strong>${req.user.fullName}</strong></p>
+  </div>
+</body>
+</html>
+`;
     //send email to admin that this user wants leave
     const mailInfo = await sendMail({
-      to: "kashifmaharofficial@gmail.com",
+      to: teamLeadEmail,
       subject,
       html,
     });
@@ -73,12 +116,12 @@ const getAllLeaves = async (req, res, next) => {
     {
       $addFields: {
         user: { $arrayElemAt: ["$user", 0] },
-      }
+      },
     },
     {
       $addFields: {
         teamHead: { $arrayElemAt: ["$teamHead", 0] },
-      }
+      },
     },
     {
       $project: {
