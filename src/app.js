@@ -4,18 +4,7 @@ import cookieParser from "cookie-parser"
 
 const app=express()
 
-const corsOptions = {
-    origin: 'https://c-icreativez.web.app', // Use your exact frontend origin here
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'], // Include headers you're using
-    credentials: true, // If you're sending cookies or credentials
-  };
-  
-  // Enable CORS for all routes
-  app.use(cors(corsOptions));
-  
-  // Respond to preflight requests
-  app.options('*', cors(corsOptions));
+app.use(cors({origin:process.env.ORIGIN,credentials:true}))
 app.use(express.json({limit:"16kb"}))
 app.use(express.urlencoded({extended:"true",limit:"16kb"}))
 app.use(cookieParser())
