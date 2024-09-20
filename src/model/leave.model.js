@@ -30,6 +30,10 @@ const leaveSchema=new mongoose.Schema({
     image:{
         type:String,
     },
+    applydate:{
+        type:String,
+        required:true
+        },
     status:{
         type:Boolean,
         required:true,
