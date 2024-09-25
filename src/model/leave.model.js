@@ -38,6 +38,9 @@ const leaveSchema=new mongoose.Schema({
         type:Boolean,
         required:true,
         default:false
+    },
+    leaveType:{
+        type:String
     }
 
 })

@@ -13,7 +13,8 @@ const applyLeave = async (req, res, next) => {
       totalDays,
       teamLeadEmail,
       teamLeadName,
-      applydate
+      applydate,
+      leaveType
     } = req.body;
     const filePath = req.file?.path;
     let cloudImagePath;
@@ -32,7 +33,8 @@ const applyLeave = async (req, res, next) => {
       endDate,
       totalDays,
       image: cloudImagePath?.url || "",
-      applydate
+      applydate,
+      leaveType
     });
 
     if (!leave) {
