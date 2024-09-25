@@ -65,5 +65,38 @@ const getAllComments=async(req,res)=>{
   
     res.status(200).json({success:true,message:"Successfully get all  comments",allComments})
   }
+const deleteComment=async(req,res,next)=>{
+  const {_id}=req.params
+  const deleteComment=await Comment.deleteOne({_id})
 
-export { createComment,getMyComments,getAllComments };
+  if(!deleteComment){
+  return next(new ApiError(400,"Error occur while deleting the comment"))
+  }
+
+  res.status(200).json({
+    success:true,message:"Successfully delete comment"
+  })
+
+}
+
+const updateComment=async(req,res,next)=>{
+  const {_id}=req.params
+  const {content}=req.body
+
+  if(content.trim()==""){
+    return next(new ApiError(400,"All fields are require"))
+  }
+  const comment=await Comment.findOne({_id})
+
+  if(!comment){
+  return next(new ApiError(400,"There is no any comment"))
+  }
+
+  comment.content=content || comment.content
+  await comment.save()
+  res.status(200).json({
+    success:true,message:"Successfully update comment"
+  })
+
+}
+export { createComment,getMyComments,getAllComments,deleteComment ,updateComment};
