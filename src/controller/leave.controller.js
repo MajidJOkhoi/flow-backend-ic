@@ -14,11 +14,15 @@ const applyLeave = async (req, res, next) => {
       teamLeadEmail,
       teamLeadName,
       applydate,
-      leaveType
+      leaveType,
     } = req.body;
     const filePath = req.file?.path;
     let cloudImagePath;
-    if ([description, teamHead,leaveType,teamLeadEmail].some((item) => item.trim() == "")) {
+    if (
+      [description, teamHead, leaveType, teamLeadEmail].some(
+        (item) => item.trim() == ""
+      )
+    ) {
       return next(new ApiError(400, "All fields are require"));
     }
 
@@ -34,7 +38,7 @@ const applyLeave = async (req, res, next) => {
       totalDays,
       image: cloudImagePath?.url || "",
       applydate,
-      leaveType
+      leaveType,
     });
 
     if (!leave) {
@@ -158,12 +162,19 @@ const getAllLeaves = async (req, res, next) => {
   });
 };
 const getMyLeaves = async (req, res, next) => {
-  const allLeaves = await Leave.aggregate([
-   {
-    $match:{_id:req.user._id}
-   },
+  let { date, leaveType } = req.query;
+  date = date.slice(0, 3);
+  const myLeaves = await Leave.aggregate([
     {
-
+      $match: {
+        $and: [
+          { user: req.user._id },
+          { leaveType: leaveType },
+          { applydate: { $regex: date, $options: "i" } },
+        ],
+      },
+    },
+    {
       $lookup: {
         from: "users",
         localField: "user",
@@ -210,14 +221,14 @@ const getMyLeaves = async (req, res, next) => {
     },
   ]);
 
-  if (!allLeaves) {
-    return next(new ApiError(400, "Error occur while fetching all leaves"));
+  if (!myLeaves) {
+    return next(new ApiError(400, "Error occur while fetching  leaves"));
   }
 
   res.status(200).json({
     success: true,
-    message: "successfully get all leaves",
-    allLeaves,
+    message: "successfully get my all leaves",
+    myLeaves,
   });
 };
-export { applyLeave, getAllLeaves };
+export { applyLeave, getAllLeaves ,getMyLeaves};
