@@ -207,6 +207,8 @@ const getMyLeaves = async (req, res, next) => {
         intialDate: 1,
         endDate: 1,
         totalDays: 1,
+        status:1,
+        leaveType:1,
         user: {
           _id: "$user._id",
           fullName: "$user.fullName",
