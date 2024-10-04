@@ -11,8 +11,7 @@ config(
 )
 const corsOptions = {
     origin: '*', // Replace with your frontend's URL
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization',
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
     credentials: true, // Allow credentials like cookies to be sent
   };
 app.use(cors(corsOptions))
