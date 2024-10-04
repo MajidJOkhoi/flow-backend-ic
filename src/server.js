@@ -10,7 +10,7 @@ config(
     }
 )
 const corsOptions = {
-    origin: 'https://flow-ic-web.vercel.app', // Replace with your frontend's URL
+    origin: '*', // Replace with your frontend's URL
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true, // Allow credentials like cookies to be sent
