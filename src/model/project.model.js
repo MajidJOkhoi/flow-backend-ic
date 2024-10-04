@@ -9,20 +9,36 @@ const projectSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
+    dueData:{
+        type:String,
+        required:true
+    },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"user",
         required:true,
     },
-    companyName:{
-         type:mongoose.Schema.Types.ObjectId,
-        ref:"company",
-        required:true,
-    },
     createdAt:{
+        type:String,   
+        default:new Date().toDateString()
+    },
+    updatedAt:{
+        type:String,
+        default:new Date().toDateString()
+    },
+    status:{
         type:String,
         required:true,
-        default:new Date().toDateString()
+    },assignMember:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:"User"
+    },
+    attachments:{
+        type:[String]
+    },
+    priority:{
+        type:String,
+        required:true
     }
 })
 
