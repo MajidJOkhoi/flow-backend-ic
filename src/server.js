@@ -23,12 +23,18 @@ app.options('*', cors(corsOptions));
 app.use(errorMiddleware);
   
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://flow-ic-web.vercel.app');
+    res.header('Access-Control-Allow-Origin', 'https://flow-ic-web.vercel.app'); // Allow localhost in dev
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+        return res.status(200).json({});
+    }
     next();
-  });
+});
+
 dbConnection()
 .then(res=>{
     app.listen(process.env.PORT,()=>{
