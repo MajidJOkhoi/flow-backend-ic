@@ -6,8 +6,6 @@ const app=express()
 
 app.use(cors({
     origin:process.env.ORIGIN,
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization',
     credentials: true // Include credentials if needed
   }))
 app.use(express.json({limit:"16kb"}))
