@@ -200,7 +200,12 @@ const login = async (req, res, next) => {
 
   res
     .status(200)
-    .cookie("token", token, { path:"/",httpOnly:true })
+    .cookie("token", token, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "None",  
+      secure: true,    
+    })
     .json({
       user_,
       token,
