@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 import { ApiError } from "../utlis/ApiError.js";
 import { User } from "../model/user.model.js";
 
@@ -12,6 +12,9 @@ const auth=async(req,res,next)=>{
 
      const {_id}=jwt.verify(token,process.env.JWT_SECRET)
      const user=await User.findOne({_id}).select("-password")
+     if(!user){
+      return next( new ApiError("400","Not found any user with this id......"))
+     }
      req.user=user
    return next()
 }
