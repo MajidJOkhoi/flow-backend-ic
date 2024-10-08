@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers, deleteAttendance } from "../controller/attendance.controller.js";
+import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers, deleteAttendance, updateAttendance } from "../controller/attendance.controller.js";
 import { auth } from "../middleware/auth.js";
 import {admin} from "../middleware/admin.js"
 
@@ -22,5 +22,6 @@ attendanceRoute.route("/myWorkingHours/:month").get(auth,myWorkingHours)
 attendanceRoute.route("/getAllTodayAbsentUsers").get(auth,getTodayAbsentUsers)
 attendanceRoute.route("/getAllTodayPresentUsers").get(auth,getTodayPresentUsers)
 attendanceRoute.route("/delete/:id").delete(deleteAttendance)
+attendanceRoute.route("/update/:attendanceId").post(updateAttendance)
 
 export { attendanceRoute}

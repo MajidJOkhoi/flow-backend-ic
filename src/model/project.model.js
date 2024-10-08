@@ -9,13 +9,18 @@ const projectSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
-    dueData:{
+    dueDate:{
         type:String,
         required:true
     },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"user",
+        ref:"User",
+        required:true,
+    },
+    companyName:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Company",
         required:true,
     },
     createdAt:{
