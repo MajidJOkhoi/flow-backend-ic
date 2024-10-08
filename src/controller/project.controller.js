@@ -12,7 +12,7 @@ const create=async (req,res)=>{
   
  
 
-      const project=await Project.create({title,description,status,priority,dueData,createdBy:req.user._id,companyName:req.user.companyId})
+      const project=await Project.create({title,description,status,priority,dueDate,createdBy:req.user._id,companyName:req.user.companyId})
     
       if (!project) {
         throw new ApiError(400, "Error Occur While Creating project");
