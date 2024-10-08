@@ -1,23 +1,26 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { ApiError } from "../utlis/ApiError.js";
 import { User } from "../model/user.model.js";
 
+const auth = async (req, res, next) => {
+  const token =req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
 
-const auth=async(req,res,next)=>{
-   const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "")
-   
-     if(!token){
-        return next( new ApiError(400,"unauthorized login......"))
-     }
+  if (!token) {
+    return next(new ApiError(400, "Unauthorized login......"));
+  }
 
-     const {_id}=jwt.verify(token,process.env.JWT_SECRET)
-     const user=await User.findOne({_id}).select("-password")
-     if(!user){
-      return next( new ApiError("400","Not found any user with this id......"))
-     }
-     req.user=user
-   return next()
-}
+ 
+  try {
+    const { _id } = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "@#%$^#%12@%$!"
+    );
+    const user = await User.findOne({_id}).select("-password");
+    req.user = user;
+   return next();
+  } catch (err) {
+    return next(new ApiError(400, " Token is not verifed:", err));
+  }
+};
 
-
-export {auth}
+export { auth };
