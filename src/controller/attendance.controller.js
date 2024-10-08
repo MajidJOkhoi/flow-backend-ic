@@ -508,7 +508,7 @@ const getTodayPresentUsers = async (req, res, next) => {
   });
 };
 
-const deleteAttendance = async (req, res) => {
+const deleteAttendance = async (req, res,next) => {
   const attendanceId = req.params.id;
   await Attendance.deleteOne({ _id: attendanceId });
 
@@ -517,6 +517,23 @@ const deleteAttendance = async (req, res) => {
     message: "Attendance Deleted",
   });
 };
+const updateAttendance=async(req,res,next)=>{
+const {attendanceId}=req.params
+const {startTime,endTime}=req.body
+
+const attendance=await Attendance.findOne({_id:attendanceId})
+console.log(attendance)
+if(!attendance){
+  return next(new ApiError(400, "No attendance record found"));
+}
+const {checkIn,checkOut}=attendance
+attendance.checkIn={...checkIn,time:startTime} || attendance.checkIn
+attendance.checkOut={...checkOut,time:endTime}  || attendance.checkOut
+
+await attendance.save()
+
+res.status(200).json({success:true,message:"Succesfully Updated Attendance"})
+}
 
 export {
   checkIn,
@@ -532,4 +549,5 @@ export {
   getTodayAbsentUsers,
   getTodayPresentUsers,
   deleteAttendance,
+  updateAttendance
 };
