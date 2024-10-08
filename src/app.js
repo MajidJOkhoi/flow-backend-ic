@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser"
 const app=express()
 
 app.use(cors({
-    origin:["https://flow-ic-web.vercel.app","http://localhost:5173"], 
+    origin:["https://flow-ic-web.vercel.app","http://localhost:5173","https://ic-flow-web-01.vercel.app"], 
     credentials: true 
   }))
 app.use(express.json({limit:"16kb"}))
