@@ -522,13 +522,15 @@ const {attendanceId}=req.params
 const {startTime,endTime}=req.body
 
 const attendance=await Attendance.findOne({_id:attendanceId})
-console.log(attendance)
+
 if(!attendance){
   return next(new ApiError(400, "No attendance record found"));
 }
 const {checkIn,checkOut}=attendance
+const duration=getDuration(startTime,endTime)
 attendance.checkIn={...checkIn,time:startTime} || attendance.checkIn
 attendance.checkOut={...checkOut,time:endTime}  || attendance.checkOut
+attendance.duration=duration || attendance.duration
 
 await attendance.save()
 
