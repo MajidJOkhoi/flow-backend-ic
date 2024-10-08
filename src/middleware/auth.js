@@ -7,7 +7,7 @@ const auth=async(req,res,next)=>{
    const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "")
    
      if(!token){
-        return next( new ApiError("400","unauthorized login......"))
+        return next( new ApiError(400,"unauthorized login......"))
      }
 
      const {_id}=jwt.verify(token,process.env.JWT_SECRET)

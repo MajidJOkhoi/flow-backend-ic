@@ -9,7 +9,7 @@ const projectSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
-    dueData:{
+    dueDate:{
         type:String,
         required:true
     },
