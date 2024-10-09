@@ -291,6 +291,8 @@ const myProfile = async (req, res,next) => {
         designation: 1,
         jobType: 1,
         status: 1,
+       password:1,
+       picture:1
       },
     },
   ]);
