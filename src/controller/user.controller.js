@@ -490,6 +490,35 @@ const getMyTeamLead=async(req,res,next)=>{
     success:true,message:"successfully get all teamHeads names",myTeamLead
   })
 }
+
+const UpdateMyProfile = async (req, res,next) => {
+  const { fullName, contact, email, password, address } =req.body;
+  const {id} = req.user;
+
+  
+
+  const user = await User.findOne({ _id:id});
+
+  if (!user) {
+    return next(ApiError(400, "user does not exits  "))
+  }
+
+  user.fullName =   fullName || user.fullName;
+  user.contact = contact ||user.contact;
+  user.email = email||user.email;
+  user.password = password || user.password;
+  user.address = address|| user.address  ;
+
+  await user.save();
+
+  const updatedUser = await User.findOne({ _id: user._id });
+  
+  res.status(200).json({
+    message: "Sucessfully User Record Updated.... ",
+    success: true,
+    updatedUser
+  });
+};
 export {
   create,
   login,
@@ -501,5 +530,6 @@ export {
   getMyAllUsers,
   deleteUser,
   getMyTeamLead,
-  getUserById
+  getUserById,
+  UpdateMyProfile
 };
