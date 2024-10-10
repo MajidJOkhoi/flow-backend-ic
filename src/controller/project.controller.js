@@ -37,16 +37,30 @@ const create = async (req, res) => {
 const getMyProjects = async (req, res) => {
   const { _id } = req.user;
   const myProjects = await Project.aggregate([
-    { $match: { createdBy: _id } },
+    {$match:{createdBy:_id}},
+    {
+      $addFields: {
+        assignMemberIds: {
+          $map: { input: "$assignMember", in: { $toObjectId: "$$this" } },
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "assignMemberIds",
+        foreignField: "_id",
+        as: "assignMember",
+      },
+    },
     {
       $project: {
+        _id: 1,
         title: 1,
         description: 1,
-        dueDate: 1,
         status: 1,
-        assignMember: 1,
-        attachments: 1,
-        priority: 1,
+        "assignMember.fullName": 1,
+        "assignMember._id": 1,
       },
     },
   ]);
