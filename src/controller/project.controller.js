@@ -2,7 +2,8 @@ import { assign } from "nodemailer/lib/shared/index.js";
 import { Project } from "../model/project.model.js";
 
 const create = async (req, res) => {
-  const { title, description, dueDate, status, priority } = req.body;
+  const { title, description, dueDate, status, priority, assignMember } =
+    req.body;
 
   if (
     [title, description, dueDate, status, priority].some(
@@ -20,6 +21,7 @@ const create = async (req, res) => {
     dueDate,
     createdBy: req.user._id,
     companyName: req.user.companyId,
+    assignMember,
   });
 
   if (!project) {
@@ -34,7 +36,7 @@ const create = async (req, res) => {
 
 const getMyProjects = async (req, res) => {
   const { _id } = req.user;
-  const myProjects =await Project.aggregate([
+  const myProjects = await Project.aggregate([
     { $match: { createdBy: _id } },
     {
       $project: {
@@ -52,7 +54,7 @@ const getMyProjects = async (req, res) => {
   res.json({
     sucess: true,
     message: "successfully get all my projects",
-    myProjects
+    myProjects,
   });
 };
 
