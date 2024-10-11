@@ -59,6 +59,8 @@ const getMyProjects = async (req, res) => {
         title: 1,
         description: 1,
         status: 1,
+        dueDate:1,
+        priority:1,
         "assignMember.fullName": 1,
         "assignMember._id": 1,
       },
