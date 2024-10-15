@@ -37,12 +37,12 @@ function getDuration(startTime, endTime) {
 const checkLocation = async (longitude, latitude) => {
   const userLocation = { latitude, longitude };
   const centerPoint = { latitude: 26.231801, longitude: 68.388698 };
-const allowedRadius = 7.12;
-const distance = geolib.getDistance(centerPoint, userLocation);
-let status=false
-if (distance <= allowedRadius) {
-  status=true
-} 
+  const allowedRadius = 7.12;
+  const distance = geolib.getDistance(centerPoint, userLocation);
+  let status = false;
+  if (distance <= allowedRadius) {
+    status = true;
+  }
 
   return status;
 };
@@ -98,6 +98,30 @@ const checkIn = async (req, res, next) => {
     message: "Sucessfully you checkIn",
     time: attendance.checkIn.time,
   });
+};
+
+const makeAttendanceFromWeb = async (req, res, next) => {
+  const { checkIn, checkOut, date } = req.body;
+  const { userid } = req.params;
+  if (checkIn.time=="" && checkOut.time=="") {
+    return new next(new ApiError(400, "All feilds are require"))
+  }
+  if (date == "") {
+    return next(new ApiError(400, "Date is require"))
+  }
+   const findAttendance=await Attendance.findOne({$and:[{user:userid},{date:date}]})
+  console.log(findAttendance)
+   if(findAttendance){
+    return next(new ApiError(400, "You can not mark attendance more then once "))
+   }
+   const duration=getDuration(checkIn?.time,checkOut?.time)
+const attendance=await Attendance.create({checkIn,checkOut,user:userid,date,duration})
+console.log(attendance)
+if(!attendance){
+  return next(new ApiError(400, "Error Occur While marking Attendance "))
+ }
+   res.status(200).json({success:true,message:"successfully mark attendance"})
+
 };
 
 const checkOut = async (req, res, next) => {
@@ -268,7 +292,7 @@ const getMyMonthAttendanceById = async (req, res, next) => {
         $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
       },
     },
-
+    {$sort:{date:1}},
     {
       $project: {
         checkIn: "$checkIn.time",
@@ -508,7 +532,7 @@ const getTodayPresentUsers = async (req, res, next) => {
   });
 };
 
-const deleteAttendance = async (req, res,next) => {
+const deleteAttendance = async (req, res, next) => {
   const attendanceId = req.params.id;
   await Attendance.deleteOne({ _id: attendanceId });
 
@@ -517,25 +541,27 @@ const deleteAttendance = async (req, res,next) => {
     message: "Attendance Deleted",
   });
 };
-const updateAttendance=async(req,res,next)=>{
-const {attendanceId}=req.params
-const {startTime,endTime}=req.body
+const updateAttendance = async (req, res, next) => {
+  const { attendanceId } = req.params;
+  const { startTime, endTime } = req.body;
 
-const attendance=await Attendance.findOne({_id:attendanceId})
+  const attendance = await Attendance.findOne({ _id: attendanceId });
 
-if(!attendance){
-  return next(new ApiError(400, "No attendance record found"));
-}
-const {checkIn,checkOut}=attendance
-const duration=getDuration(startTime,endTime)
-attendance.checkIn={...checkIn,time:startTime} || attendance.checkIn
-attendance.checkOut={...checkOut,time:endTime}  || attendance.checkOut
-attendance.duration=duration || attendance.duration
+  if (!attendance) {
+    return next(new ApiError(400, "No attendance record found"));
+  }
+  const { checkIn, checkOut } = attendance;
+  const duration = getDuration(startTime, endTime);
+  attendance.checkIn = { ...checkIn, time: startTime } || attendance.checkIn;
+  attendance.checkOut = { ...checkOut, time: endTime } || attendance.checkOut;
+  attendance.duration = duration || attendance.duration;
 
-await attendance.save()
+  await attendance.save();
 
-res.status(200).json({success:true,message:"Succesfully Updated Attendance"})
-}
+  res
+    .status(200)
+    .json({ success: true, message: "Succesfully Updated Attendance" });
+};
 
 export {
   checkIn,
@@ -551,5 +577,6 @@ export {
   getTodayAbsentUsers,
   getTodayPresentUsers,
   deleteAttendance,
-  updateAttendance
+  updateAttendance,
+  makeAttendanceFromWeb
 };

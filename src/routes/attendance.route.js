@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers, deleteAttendance, updateAttendance } from "../controller/attendance.controller.js";
+import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers, deleteAttendance, updateAttendance, makeAttendanceFromWeb } from "../controller/attendance.controller.js";
 import { auth } from "../middleware/auth.js";
 import {admin} from "../middleware/admin.js"
 
@@ -9,8 +9,8 @@ import {admin} from "../middleware/admin.js"
  const attendanceRoute=Router()
 
 
- attendanceRoute.route("/checkIn").post(auth,checkIn)
- attendanceRoute.route("/checkOut").post(auth,checkOut)
+attendanceRoute.route("/checkIn").post(auth,checkIn)
+attendanceRoute.route("/checkOut").post(auth,checkOut)
 attendanceRoute.route("/getTodayAttendance/:date").get(auth,getTodayAttendance)
 attendanceRoute.route("/getMyAllAttendances").get(auth,getMyAllAttendance)
 attendanceRoute.route("/getMyMonthAttendance/:month").get(auth,getMyMonthAttendance)
@@ -23,5 +23,6 @@ attendanceRoute.route("/getAllTodayAbsentUsers").get(auth,getTodayAbsentUsers)
 attendanceRoute.route("/getAllTodayPresentUsers").get(auth,getTodayPresentUsers)
 attendanceRoute.route("/delete/:id").delete(deleteAttendance)
 attendanceRoute.route("/update/:attendanceId").post(updateAttendance)
+attendanceRoute.route("/markAttendance/:userid").post(makeAttendanceFromWeb)
 
 export { attendanceRoute}
