@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers, deleteAttendance, updateAttendance, makeAttendanceFromWeb } from "../controller/attendance.controller.js";
+import { checkIn, checkOut, getMyMonthAttendance, getMyAllAttendance, getTodayAttendance, getAllUserAttendance, getMyMonthAttendanceById, countTodayAttendies, getMyTeamMemberTodayAttendanceRecord, myWorkingHours, getTodayAbsentUsers, getTodayPresentUsers, deleteAttendance, updateAttendance, makeAttendanceFromWeb, getMyTeamMemberMonthlyRecord } from "../controller/attendance.controller.js";
 import { auth } from "../middleware/auth.js";
 import {admin} from "../middleware/admin.js"
 
@@ -24,5 +24,5 @@ attendanceRoute.route("/getAllTodayPresentUsers").get(auth,getTodayPresentUsers)
 attendanceRoute.route("/delete/:id").delete(deleteAttendance)
 attendanceRoute.route("/update/:attendanceId").post(updateAttendance)
 attendanceRoute.route("/markAttendance/:userid").post(makeAttendanceFromWeb)
-
+attendanceRoute.route("/getTeamMembersMonthlyRecord/:month").get(auth,getMyTeamMemberMonthlyRecord)
 export { attendanceRoute}

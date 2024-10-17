@@ -103,25 +103,36 @@ const checkIn = async (req, res, next) => {
 const makeAttendanceFromWeb = async (req, res, next) => {
   const { checkIn, checkOut, date } = req.body;
   const { userid } = req.params;
-  if (checkIn.time=="" && checkOut.time=="") {
-    return new next(new ApiError(400, "All feilds are require"))
+  if (checkIn.time == "" && checkOut.time == "") {
+    return new next(new ApiError(400, "All feilds are require"));
   }
   if (date == "") {
-    return next(new ApiError(400, "Date is require"))
+    return next(new ApiError(400, "Date is require"));
   }
-   const findAttendance=await Attendance.findOne({$and:[{user:userid},{date:date}]})
-  console.log(findAttendance)
-   if(findAttendance){
-    return next(new ApiError(400, "You can not mark attendance more then once "))
-   }
-   const duration=getDuration(checkIn?.time,checkOut?.time)
-const attendance=await Attendance.create({checkIn,checkOut,user:userid,date,duration})
-console.log(attendance)
-if(!attendance){
-  return next(new ApiError(400, "Error Occur While marking Attendance "))
- }
-   res.status(200).json({success:true,message:"successfully mark attendance"})
-
+  const findAttendance = await Attendance.findOne({
+    $and: [{ user: userid }, { date: date }],
+  });
+  console.log(findAttendance);
+  if (findAttendance) {
+    return next(
+      new ApiError(400, "You can not mark attendance more then once ")
+    );
+  }
+  const duration = getDuration(checkIn?.time, checkOut?.time);
+  const attendance = await Attendance.create({
+    checkIn,
+    checkOut,
+    user: userid,
+    date,
+    duration,
+  });
+  console.log(attendance);
+  if (!attendance) {
+    return next(new ApiError(400, "Error Occur While marking Attendance "));
+  }
+  res
+    .status(200)
+    .json({ success: true, message: "successfully mark attendance" });
 };
 
 const checkOut = async (req, res, next) => {
@@ -292,7 +303,7 @@ const getMyMonthAttendanceById = async (req, res, next) => {
         $and: [{ date: { $regex: month, $options: "i" } }, { user: userid }],
       },
     },
-    {$sort:{date:1}},
+    { $sort: { date: 1 } },
     {
       $project: {
         checkIn: "$checkIn.time",
@@ -562,6 +573,49 @@ const updateAttendance = async (req, res, next) => {
     .status(200)
     .json({ success: true, message: "Succesfully Updated Attendance" });
 };
+const getMyTeamMemberMonthlyRecord = async (req, res) => {
+  let { month } = req.params;
+  month = month.slice(0, 3);
+  const monthAttendanceofTeamMembers = await Attendance.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $addFields: { user: { $arrayElemAt: ["$user", 0] } },
+    },
+    {
+      $match: {
+        $and: [
+          { date: { $regex: month, $options: "i" } },
+          { checkOut: { $exists: true } },
+          { "user.createdBy": req.user._id },
+        ],
+      },
+    },
+    {
+      $group: {
+        _id: "$user._id",
+        count: { $count: {} },
+        fullName: { $first: "$user.fullName" },
+        email: { $first: "$user.email" },
+        checkIn: { $push: "$checkIn.time" },
+        checkOut: { $push: "$checkOut.time" },
+      },
+    },
+  ]);
+  res
+    .status(200)
+    .json({
+      success: true,
+      message: "successfully get attendance record",
+      monthAttendanceofTeamMembers,
+    });
+};
 
 export {
   checkIn,
@@ -578,5 +632,6 @@ export {
   getTodayPresentUsers,
   deleteAttendance,
   updateAttendance,
-  makeAttendanceFromWeb
+  makeAttendanceFromWeb,
+  getMyTeamMemberMonthlyRecord,
 };
