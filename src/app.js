@@ -47,6 +47,10 @@ app.use("/api/leave",leaveRouter)
 
 import { commentRoute } from "./routes/comment.route.js"
 app.use("/api/comment",commentRoute)
+
+import { taskRoute } from "./routes/task.route.js"
+app.use("/api/task",taskRoute)
+
 app.get("/",(req,res)=>{
     res.json({
         success:true

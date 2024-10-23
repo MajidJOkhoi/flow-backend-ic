@@ -1,5 +1,6 @@
-import { assign } from "nodemailer/lib/shared/index.js";
+
 import { Project } from "../model/project.model.js";
+import { ApiError } from "../utlis/ApiError.js";
 
 const create = async (req, res) => {
   const { title, description, dueDate, status, priority, assignMember } =
@@ -37,7 +38,7 @@ const create = async (req, res) => {
 const getMyProjects = async (req, res) => {
   const { _id } = req.user;
   const myProjects = await Project.aggregate([
-    {$match:{createdBy:_id}},
+    { $match: { createdBy: _id } },
     {
       $addFields: {
         assignMemberIds: {
@@ -59,8 +60,8 @@ const getMyProjects = async (req, res) => {
         title: 1,
         description: 1,
         status: 1,
-        dueDate:1,
-        priority:1,
+        dueDate: 1,
+        priority: 1,
         "assignMember.fullName": 1,
         "assignMember._id": 1,
       },
@@ -74,4 +75,22 @@ const getMyProjects = async (req, res) => {
   });
 };
 
-export { create, getMyProjects };
+const getAssginMembersByProjectId = async (req, res, next) => {
+  const { _id } = req.params;
+  if(!_id) {
+    return next(new ApiError(400,"ProjectId  is  required"))
+  }
+  const project = await Project.findOne({_id}).populate('assignMember')
+  if(!project) {
+    return next(new ApiError(400,"This project does not exist"))
+  }
+  
+  const assignMembers=project?.assignMember.map(assignMember => ({_id:assignMember._id,fullName:assignMember.fullName,email:assignMember.email}))
+  res.json({
+    sucess: true,
+    message: "Successfully get all assgin members of this project",
+    assignMembers
+  });
+};
+
+export { create, getMyProjects,getAssginMembersByProjectId };
