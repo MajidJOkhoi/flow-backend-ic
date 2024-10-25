@@ -4,7 +4,7 @@ import { ApiError } from "../utlis/ApiError.js";
 const createTask = async (req, res, next) => {
   const { taskTitle, description, dueDate, assignMember, projectId } = req.body;
   if ([taskTitle, description, dueDate].some((item) => item.trim() === "")) {
-    throw new ApiError("All fields are required");
+    return next(new ApiError(400,"ALl fields are required"))
   }
   if (!projectId) {
     return next(new ApiError(400, "project is required"));
