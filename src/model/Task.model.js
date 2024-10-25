@@ -6,7 +6,7 @@ const taskSchema=mongoose.Schema({
     dueDate:{type:String,required:true},
     status:{type:String,default:"ongoing"},
     assignMember:{type:[mongoose.Schema.Types.ObjectId],ref:"User",required:true},
-    projectId:{type:[mongoose.Schema.Types.ObjectId],ref:"Project",required:true},
+    projectId:{type:mongoose.Schema.Types.ObjectId,ref:"Project",required:true},
     createdAt:{type:String,default:new Date().toDateString()},
     updatedAt:{type:String,default:new Date().toDateString()}
 })

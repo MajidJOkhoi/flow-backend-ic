@@ -41,5 +41,17 @@ const createTask = async (req, res, next) => {
   res.status(200).json({success: true,message:"Successfully created task"});
 };
 
+const getTaskByProjectId = async (req, res, next) => {
+  const { projectId } = req.params;
+  if (!projectId) {
+    return next(new ApiError(400, "project is required"));
+  }
+  const tasks = await Task.find({ projectId }).populate("assignMember");
+  if (!tasks) {
+    return next(new ApiError(400, "Error occur While retrieving tasks"));
+  }
 
-export {createTask}
+  res.status(200).json({success: true, message:"Task successfully retrieved",tasks})
+
+}
+export {createTask,getTaskByProjectId}
